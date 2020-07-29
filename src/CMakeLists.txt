@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 3.12)
+
+set(
+    SOURCE_FILES
+    main.cpp
+    camera.cpp
+    camera.hpp
+    geometryobject.cpp
+    geometryobject.hpp
+    intersection.cpp
+    intersection.hpp
+    light.cpp
+    light.hpp
+    material.cpp
+    material.hpp
+    ray.cpp
+    ray.hpp
+    raytracer.cpp
+    raytracer.hpp
+    sphere.cpp
+    sphere.hpp
+)
+
+add_executable(run ${SOURCE_FILES})
+target_compile_features(run PRIVATE cxx_std_17)
+set_target_properties(run PROPERTIES CXX_EXTENSIONS OFF)
+target_compile_options(run PRIVATE "-Wall;-Werror;-Wextra;")
