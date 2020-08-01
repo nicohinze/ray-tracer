@@ -43,7 +43,8 @@ glm::vec3 Raytracer::cast_ray(const Ray& ray) {
         }
         return closest_intersect.normal;
     }
-    return glm::vec3(0.1, 0.5, 0.8);
+    float t = 0.5 * (ray.direction.y + 1.0);
+    return (1.0F - t) * glm::vec3(0.1, 1.0, 1.0) + t * glm::vec3(0.1, 0.5, 1.0);
 }
 
 void Raytracer::cast_rays() {
