@@ -96,11 +96,21 @@ glm::vec3 Raytracer::calculate_diffuse_and_specular_lighting(const Ray& ray, con
     float specular_light_intensity = 0;
     for (auto l : lights) {
         auto light_direction = glm::normalize(l.get_position() - intersect.position);
-        diffuse_light_intensity += l.get_intensity() * std::max(0.0F, glm::dot(intersect.normal, light_direction));
-        specular_light_intensity += l.get_intensity() * std::pow(
-                                                            std::max(0.0F, glm::dot(light_direction, ray.reflect(intersect.normal))),
-                                                            intersect.material->get_shininess());
+        auto shadow_ray = Ray(intersect.position + 1e-3F * intersect.normal, light_direction);
+        if (!is_in_shadow(shadow_ray, glm::length(l.get_position() - intersect.position))) {
+            diffuse_light_intensity += l.get_intensity() * std::max(0.0F, glm::dot(intersect.normal, light_direction));
+            specular_light_intensity += l.get_intensity() * std::pow(
+                                                                std::max(0.0F, glm::dot(light_direction, ray.reflect(intersect.normal))),
+                                                                intersect.material->get_shininess());
+        }
     }
     return intersect.material->get_k_diffuse() * intersect.material->get_color() * diffuse_light_intensity +
            intersect.material->get_k_specular() * glm::vec3(1, 1, 1) * specular_light_intensity;
+}
+
+bool Raytracer::is_in_shadow(const Ray& ray, float light_distance) {
+    if (auto intersect = get_closest_intersection(ray)) {
+        return intersect->distance < light_distance;
+    }
+    return false;
 }
