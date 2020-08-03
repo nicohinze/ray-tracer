@@ -1,3 +1,4 @@
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -23,25 +24,9 @@ Raytracer::Raytracer() {
 }
 
 glm::vec3 Raytracer::cast_ray(const Ray& ray) {
-    auto closest_intersect = Intersection(std::numeric_limits<float>::max(), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), nullptr);
-    for (auto& object : geometry_objects) {
-        if (auto intersect = object->intersect(ray)) {
-            if (intersect->distance < closest_intersect.distance) {
-                closest_intersect = intersect.value();
-            }
-        }
-    }
-
-    if (closest_intersect.distance < std::numeric_limits<float>::max()) {
-        float light_intensity = 0;
-        for (auto l : lights) {
-            auto light_direction = glm::normalize(l.get_position() - closest_intersect.position);
-            light_intensity += l.get_intensity() * std::max(0.0F, glm::dot(closest_intersect.normal, light_direction));
-        }
-        if (closest_intersect.material != nullptr) {
-            return closest_intersect.material->get_diffuse_color() * light_intensity;
-        }
-        return closest_intersect.normal;
+    auto closest_intersect = get_closest_intersection(ray);
+    if (closest_intersect) {
+        return calculate_lighting(ray, closest_intersect.value());
     }
     float t = 0.5 * (ray.direction.y + 1.0);
     return (1.0F - t) * glm::vec3(0.1, 1.0, 1.0) + t * glm::vec3(0.1, 0.5, 1.0);
@@ -73,4 +58,43 @@ void Raytracer::write_framebuffer(const std::string& filename) {
         }
     }
     ofs.close();
+}
+
+std::optional<Intersection> Raytracer::get_closest_intersection(const Ray& ray) {
+    std::optional<Intersection> closest_intersect;
+    for (auto& object : geometry_objects) {
+        if (auto intersect = object->intersect(ray)) {
+            if (!closest_intersect || intersect->distance < closest_intersect->distance) {
+                closest_intersect = intersect;
+            }
+        }
+    }
+    return closest_intersect;
+}
+
+glm::vec3 Raytracer::calculate_lighting(const Ray& ray, const Intersection& intersect) {
+    if (intersect.material != nullptr) {
+        // auto ambient = calculate_ambient_lighting(intersect);
+        auto diffuse = calculate_diffuse_and_specular_lighting(ray, intersect);
+        return diffuse;
+    }
+    return intersect.normal;
+}
+
+glm::vec3 Raytracer::calculate_ambient_lighting(const Intersection& intersect) {
+    return intersect.material->get_k_ambient() * intersect.material->get_color();
+}
+
+glm::vec3 Raytracer::calculate_diffuse_and_specular_lighting(const Ray& ray, const Intersection& intersect) {
+    float diffuse_light_intensity = 0;
+    float specular_light_intensity = 0;
+    for (auto l : lights) {
+        auto light_direction = glm::normalize(l.get_position() - intersect.position);
+        diffuse_light_intensity += l.get_intensity() * std::max(0.0F, glm::dot(intersect.normal, light_direction));
+        specular_light_intensity += l.get_intensity() * std::pow(
+                                                            std::max(0.0F, glm::dot(light_direction, ray.reflect(intersect.normal))),
+                                                            intersect.material->get_shininess());
+    }
+    return intersect.material->get_k_diffuse() * intersect.material->get_color() * diffuse_light_intensity +
+           intersect.material->get_k_specular() * glm::vec3(1, 1, 1) * specular_light_intensity;
 }

@@ -30,4 +30,8 @@ class Raytracer {
     ~Raytracer() = default;
     void cast_rays();
     void write_framebuffer(const std::string& filename);
+    std::optional<Intersection> get_closest_intersection(const Ray& ray);
+    glm::vec3 calculate_lighting(const Ray& ray, const Intersection& intersect);
+    glm::vec3 calculate_ambient_lighting(const Intersection& intersect);
+    glm::vec3 calculate_diffuse_and_specular_lighting(const Ray& ray, const Intersection& intersect);
 };
