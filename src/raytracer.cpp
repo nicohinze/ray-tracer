@@ -15,12 +15,18 @@
 Raytracer::Raytracer() {
     framebuffer.reserve(width * height);
 
-    materials["red"] = std::make_unique<Material>(glm::vec3(1, 0, 0));
+    materials["ivory"] = std::make_unique<Material>(glm::vec3(0.4, 0.4, 0.3), 0.0, 0.6, 0.3, 50.0);
+    materials["red_rubber"] = std::make_unique<Material>(glm::vec3(0.3, 0.1, 0.1), 0.0, 0.9, 0.1, 10.0);
 
-    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(5, 2, -7), 2, materials["red"].get()));
-    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(0, 0, -17), 2, nullptr));
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-3, 0, -16), 2, materials["ivory"].get()));
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-1.0, -1.5, -12), 2, materials["red_rubber"].get()));
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(1.5, -0.5, -18), 3, materials["red_rubber"].get()));
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(7, 5, -18), 4, materials["ivory"].get()));
 
-    lights = {Light(glm::vec3(-20, 20, 20), 1.5)};
+    lights = {
+        Light(glm::vec3(-20, 20, 20), 1.5),
+        Light(glm::vec3(30, 50, -25), 1.8),
+        Light(glm::vec3(30, 20, 30), 1.7)};
 }
 
 glm::vec3 Raytracer::cast_ray(const Ray& ray) {
