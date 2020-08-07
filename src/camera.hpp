@@ -8,6 +8,5 @@ class Camera {
 
   public:
     Camera();
-    ~Camera() = default;
     glm::vec3 get_origin() const;
 };

@@ -15,8 +15,8 @@
 
 class Raytracer {
   private:
-    int width = 1024;
-    int height = 768;
+    const int WIDTH = 1024;
+    const int HEIGHT = 768;
     std::vector<glm::vec3> framebuffer;
     Camera camera;
     std::map<std::string, std::unique_ptr<Material>> materials;
@@ -27,7 +27,6 @@ class Raytracer {
 
   public:
     Raytracer();
-    ~Raytracer() = default;
     void cast_rays();
     void write_framebuffer(const std::string& filename);
     std::optional<Intersection> get_closest_intersection(const Ray& ray);

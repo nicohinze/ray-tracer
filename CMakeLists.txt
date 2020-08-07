@@ -9,8 +9,6 @@ project(
 
 option(RAY_TRACER_BUILD_TESTS "Build tests." ON)
 
-# set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-header-filter=.;-checks=*,-cppcoreguidelines-avoid-magic-numbers,-modernize-use-nodiscard;-warnings-as-errors=*")
-
 add_subdirectory("external/catch")
 add_subdirectory("src")
 

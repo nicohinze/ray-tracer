@@ -9,7 +9,6 @@ class Light {
 
   public:
     Light(const glm::vec3& p, float i);
-    ~Light() = default;
     glm::vec3 get_position() const;
     float get_intensity() const;
 };

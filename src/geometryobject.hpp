@@ -12,7 +12,11 @@ class GeometryObject {
     const Material* material;
 
   public:
-    GeometryObject(const Material* m);
+    explicit GeometryObject(const Material* m);
+    GeometryObject(const GeometryObject& other) = default;
+    GeometryObject(GeometryObject&& other) = default;
+    GeometryObject& operator=(const GeometryObject& other) = default;
+    GeometryObject& operator=(GeometryObject&& other) = default;
     virtual ~GeometryObject() = default;
     virtual std::optional<Intersection> intersect(const Ray& ray) const = 0;
     const Material* get_material() const;

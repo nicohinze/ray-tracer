@@ -11,11 +11,10 @@
 
 class Sphere : public GeometryObject {
   private:
-  public:
     glm::vec3 center;
     float radius;
 
+  public:
     Sphere(const glm::vec3& c, float r, const Material* m);
-    ~Sphere() = default;
     std::optional<Intersection> intersect(const Ray& ray) const override;
 };
