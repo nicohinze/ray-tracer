@@ -5,6 +5,6 @@
 
 int main() {
     Raytracer raytracer;
-    raytracer.cast_rays();
+    raytracer.trace_rays();
     raytracer.write_framebuffer("out.ppm");
 }

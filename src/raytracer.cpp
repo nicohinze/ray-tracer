@@ -40,7 +40,7 @@ glm::vec3 Raytracer::cast_ray(const Ray& ray) {
     return (1.0F - t) * CYAN + t * BLUE;
 }
 
-void Raytracer::cast_rays() {
+void Raytracer::trace_rays() {
     const auto lower_left = glm::vec3(-static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), -1.0, -1.0);
     const auto horizontal = glm::vec3(2 * static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0, 0);
     const auto vertical = glm::vec3(0, 2, 0);

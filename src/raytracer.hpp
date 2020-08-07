@@ -24,14 +24,14 @@ class Raytracer {
     std::vector<Light> lights;
 
     glm::vec3 cast_ray(const Ray& ray);
-
-  public:
-    Raytracer();
-    void cast_rays();
-    void write_framebuffer(const std::string& filename);
     std::optional<Intersection> get_closest_intersection(const Ray& ray);
     glm::vec3 calculate_lighting(const Ray& ray, const Intersection& intersect);
     glm::vec3 calculate_ambient_lighting(const Intersection& intersect);
     glm::vec3 calculate_diffuse_and_specular_lighting(const Ray& ray, const Intersection& intersect);
     bool is_in_shadow(const Ray& ray, float light_distance);
+
+  public:
+    Raytracer();
+    void trace_rays();
+    void write_framebuffer(const std::string& filename);
 };
