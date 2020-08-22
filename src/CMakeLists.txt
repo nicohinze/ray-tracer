@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-header-filter=.")
+if(RAY_TRACER_BUILD_CLANG_TIDY)
+    set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-header-filter=.")
+endif()
 
 set(
     SOURCE_FILES

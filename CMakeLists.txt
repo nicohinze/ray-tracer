@@ -8,6 +8,7 @@ project(
 )
 
 option(RAY_TRACER_BUILD_TESTS "Build tests." ON)
+option(RAY_TRACER_BUILD_CLANG_TIDY "Build with clang-tidy." OFF)
 
 add_subdirectory("external/catch")
 add_subdirectory("src")

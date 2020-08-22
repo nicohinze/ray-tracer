@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+if(RAY_TRACER_BUILD_CLANG_TIDY)
+    set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+endif()
 
 set(
     TEST_FILES
