@@ -15,13 +15,14 @@
 Raytracer::Raytracer() {
     framebuffer.reserve(WIDTH * HEIGHT);
 
-    materials["ivory"] = std::make_unique<Material>(glm::vec3(0.4, 0.4, 0.3), 0.0, 0.6, 0.3, 50.0);      // NOLINT(readability-magic-numbers)
-    materials["red_rubber"] = std::make_unique<Material>(glm::vec3(0.3, 0.1, 0.1), 0.0, 0.9, 0.1, 10.0); // NOLINT(readability-magic-numbers)
+    materials["ivory"] = std::make_unique<Material>(glm::vec3(0.4, 0.4, 0.3), 0.0, 0.6, 0.3, 50.0, 0.1);      // NOLINT(readability-magic-numbers)
+    materials["red_rubber"] = std::make_unique<Material>(glm::vec3(0.3, 0.1, 0.1), 0.0, 0.9, 0.1, 10.0, 0.0); // NOLINT(readability-magic-numbers)
+    materials["mirror"] = std::make_unique<Material>(glm::vec3(1.0, 1.0, 1.0), 0.0, 0.0, 10.0, 1425.0, 0.8);  // NOLINT(readability-magic-numbers)
 
-    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-3, 0, -16), 2, materials["ivory"].get()));           // NOLINT(readability-magic-numbers)
-    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-1.0, -1.5, -12), 2, materials["red_rubber"].get())); // NOLINT(readability-magic-numbers)
-    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(1.5, -0.5, -18), 3, materials["red_rubber"].get()));  // NOLINT(readability-magic-numbers)
-    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(7, 5, -18), 4, materials["ivory"].get()));            // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-3, 0, -16), 2, materials["ivory"].get()));          // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-1.0, -1.5, -12), 2, materials["mirror"].get()));    // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(1.5, -0.5, -18), 3, materials["red_rubber"].get())); // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(7, 5, -18), 4, materials["mirror"].get()));          // NOLINT(readability-magic-numbers)
 
     lights = {
         Light(glm::vec3(-20, 20, 20), 1.5), // NOLINT(readability-magic-numbers)
@@ -29,12 +30,15 @@ Raytracer::Raytracer() {
         Light(glm::vec3(30, 20, 30), 1.7)}; // NOLINT(readability-magic-numbers)
 }
 
-glm::vec3 Raytracer::cast_ray(const Ray& ray) {
+glm::vec3 Raytracer::cast_ray(const Ray& ray, int recursion_depth) {
     static constexpr auto CYAN = glm::vec3(0.1, 1.0, 1.0);
     static constexpr auto BLUE = glm::vec3(0.1, 0.5, 1.0);
+    if (recursion_depth > MAX_RECURSION_DEPTH) {
+        return glm::vec3(0, 0, 0);
+    }
     auto closest_intersect = get_closest_intersection(ray);
     if (closest_intersect) {
-        return calculate_lighting(ray, closest_intersect.value());
+        return calculate_lighting(ray, closest_intersect.value(), recursion_depth);
     }
     float t = 0.5F * (ray.get_direction().y + 1.0F);
     return (1.0F - t) * CYAN + t * BLUE;
@@ -50,7 +54,7 @@ void Raytracer::trace_rays() {
         for (int x = 0; x < WIDTH; ++x) {
             auto u = static_cast<float>(x) / static_cast<float>(WIDTH);
             auto ray = Ray(camera.get_origin(), glm::normalize(lower_left + u * horizontal + v * vertical));
-            framebuffer[y * WIDTH + x] = cast_ray(ray);
+            framebuffer[y * WIDTH + x] = cast_ray(ray, 0);
         }
     }
 }
@@ -80,11 +84,12 @@ std::optional<Intersection> Raytracer::get_closest_intersection(const Ray& ray) 
     return closest_intersect;
 }
 
-glm::vec3 Raytracer::calculate_lighting(const Ray& ray, const Intersection& intersect) {
+glm::vec3 Raytracer::calculate_lighting(const Ray& ray, const Intersection& intersect, int recursion_depth) {
     if (intersect.get_material() != nullptr) {
         // auto ambient = calculate_ambient_lighting(intersect);
         auto diffuse = calculate_diffuse_and_specular_lighting(ray, intersect);
-        return diffuse;
+        auto reflec = calculate_reflective_lighting(ray, intersect, recursion_depth);
+        return diffuse + reflec;
     }
     return intersect.get_normal();
 }
@@ -109,6 +114,12 @@ glm::vec3 Raytracer::calculate_diffuse_and_specular_lighting(const Ray& ray, con
     }
     return intersect.get_material()->get_k_diffuse() * intersect.get_material()->get_color() * diffuse_light_intensity +
            intersect.get_material()->get_k_specular() * glm::vec3(1, 1, 1) * specular_light_intensity;
+}
+
+glm::vec3 Raytracer::calculate_reflective_lighting(const Ray& ray, const Intersection& intersect, int recursion_depth) {
+    static const auto OFFSET = 1e-3F;
+    auto reflec_ray = Ray(intersect.get_position() + OFFSET * intersect.get_normal(), ray.reflect(intersect.get_normal()));
+    return intersect.get_material()->get_reflectivity() * cast_ray(reflec_ray, recursion_depth + 1);
 }
 
 bool Raytracer::is_in_shadow(const Ray& ray, float light_distance) {

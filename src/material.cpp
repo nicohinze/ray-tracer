@@ -1,7 +1,7 @@
 #include "material.hpp"
 
-Material::Material(const glm::vec3& c, float ka, float kd, float ks, float s)
-    : color(c), k_ambient(ka), k_diffuse(kd), k_specular(ks), shininess(s) {
+Material::Material(const glm::vec3& c, float ka, float kd, float ks, float s, float r)
+    : color(c), k_ambient(ka), k_diffuse(kd), k_specular(ks), shininess(s), reflectivity(r) {
 }
 
 glm::vec3 Material::get_color() const {
@@ -22,4 +22,8 @@ float Material::get_k_specular() const {
 
 float Material::get_shininess() const {
     return shininess;
+}
+
+float Material::get_reflectivity() const {
+    return reflectivity;
 }
