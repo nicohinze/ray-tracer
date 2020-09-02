@@ -12,4 +12,5 @@ class Ray {
     glm::vec3 get_origin() const;
     glm::vec3 get_direction() const;
     glm::vec3 reflect(const glm::vec3& n) const;
+    glm::vec3 refract(const glm::vec3& n, float refractive_index) const;
 };

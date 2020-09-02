@@ -30,6 +30,7 @@ class Raytracer {
     glm::vec3 calculate_ambient_lighting(const Intersection& intersect);
     glm::vec3 calculate_diffuse_and_specular_lighting(const Ray& ray, const Intersection& intersect);
     glm::vec3 calculate_reflective_lighting(const Ray& ray, const Intersection& intersect, int recursion_depth);
+    glm::vec3 calculate_refractive_lighting(const Ray& ray, const Intersection& intersect, int recursion_depth);
     bool is_in_shadow(const Ray& ray, float light_distance);
 
   public:
