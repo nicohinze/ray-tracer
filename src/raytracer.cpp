@@ -97,7 +97,7 @@ glm::vec3 Raytracer::calculate_lighting(const Ray& ray, const Intersection& inte
 }
 
 glm::vec3 Raytracer::calculate_ambient_lighting(const Intersection& intersect) {
-    return intersect.get_material()->get_k_ambient() * intersect.get_material()->get_color();
+    return intersect.get_material()->k_ambient * intersect.get_material()->color;
 }
 
 glm::vec3 Raytracer::calculate_diffuse_and_specular_lighting(const Ray& ray, const Intersection& intersect) {
@@ -111,29 +111,29 @@ glm::vec3 Raytracer::calculate_diffuse_and_specular_lighting(const Ray& ray, con
             diffuse_light_intensity += l.get_intensity() * std::max(0.0F, glm::dot(intersect.get_normal(), light_direction));
             specular_light_intensity += l.get_intensity() * std::pow(
                                                                 std::max(0.0F, glm::dot(light_direction, ray.reflect(intersect.get_normal()))),
-                                                                intersect.get_material()->get_shininess());
+                                                                intersect.get_material()->shininess);
         }
     }
-    return intersect.get_material()->get_k_diffuse() * intersect.get_material()->get_color() * diffuse_light_intensity +
-           intersect.get_material()->get_k_specular() * glm::vec3(1, 1, 1) * specular_light_intensity;
+    return intersect.get_material()->k_diffuse * intersect.get_material()->color * diffuse_light_intensity +
+           intersect.get_material()->k_specular * glm::vec3(1, 1, 1) * specular_light_intensity;
 }
 
 glm::vec3 Raytracer::calculate_reflective_lighting(const Ray& ray, const Intersection& intersect, int recursion_depth) {
     static const auto OFFSET = 1e-3F;
-    if (intersect.get_material()->get_reflectivity() > 0) {
+    if (intersect.get_material()->reflectivity > 0) {
         auto reflec_ray = Ray(intersect.get_position() + OFFSET * intersect.get_normal(), ray.reflect(intersect.get_normal()));
-        return intersect.get_material()->get_reflectivity() * cast_ray(reflec_ray, recursion_depth + 1);
+        return intersect.get_material()->reflectivity * cast_ray(reflec_ray, recursion_depth + 1);
     }
     return glm::vec3(0, 0, 0);
 }
 
 glm::vec3 Raytracer::calculate_refractive_lighting(const Ray& ray, const Intersection& intersect, int recursion_depth) {
     static const auto OFFSET = 1e-3F;
-    if (intersect.get_material()->get_refractivity() > 0) {
-        auto refrac = ray.refract(intersect.get_normal(), intersect.get_material()->get_refractive_index());
+    if (intersect.get_material()->refractivity > 0) {
+        auto refrac = ray.refract(intersect.get_normal(), intersect.get_material()->refractive_index);
         auto k = glm::dot(refrac, intersect.get_normal()) < 0 ? -1.0F : 1.0F;
         auto refrac_ray = Ray(intersect.get_position() + k * OFFSET * intersect.get_normal(), refrac);
-        return intersect.get_material()->get_refractivity() * cast_ray(refrac_ray, recursion_depth + 1);
+        return intersect.get_material()->refractivity * cast_ray(refrac_ray, recursion_depth + 1);
     }
     return glm::vec3(0, 0, 0);
 }
