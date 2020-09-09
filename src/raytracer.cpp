@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <random>
 
 #include <glm/glm.hpp>
 
@@ -49,13 +50,21 @@ void Raytracer::trace_rays() {
     const auto lower_left = glm::vec3(-static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), -1.0, -1.0);
     const auto horizontal = glm::vec3(2 * static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0, 0);
     const auto vertical = glm::vec3(0, 2, 0);
-
+    const auto seed = 19640;
+    auto mt = std::mt19937(seed); // NOLINT(cert-msc32-c,cert-msc51-cpp)
+    std::uniform_real_distribution<float> dist(0.0, 1.0);
     for (int y = 0; y < HEIGHT; ++y) {
-        auto v = static_cast<float>(HEIGHT - y) / static_cast<float>(HEIGHT);
         for (int x = 0; x < WIDTH; ++x) {
-            auto u = static_cast<float>(x) / static_cast<float>(WIDTH);
-            auto ray = Ray(camera.get_origin(), glm::normalize(lower_left + u * horizontal + v * vertical));
-            framebuffer[y * WIDTH + x] = cast_ray(ray, 0);
+            auto avg_color = glm::vec3(0, 0, 0);
+            for (int _ = 0; _ < RAYS_PER_PIXEL; ++_) {
+                auto v = (static_cast<float>(HEIGHT) - static_cast<float>(y) + dist(mt)) / static_cast<float>(HEIGHT);
+                auto u = (static_cast<float>(x) + dist(mt)) / static_cast<float>(WIDTH);
+                auto ray = Ray(camera.get_origin(), glm::normalize(lower_left + u * horizontal + v * vertical));
+                auto color = cast_ray(ray, 0);
+                avg_color += color;
+            }
+            avg_color /= RAYS_PER_PIXEL;
+            framebuffer[y * WIDTH + x] = avg_color;
         }
     }
 }

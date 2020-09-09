@@ -18,6 +18,7 @@ class Raytracer {
     const int WIDTH = 1024;
     const int HEIGHT = 768;
     const int MAX_RECURSION_DEPTH = 4;
+    const int RAYS_PER_PIXEL = 100;
     std::vector<glm::vec3> framebuffer;
     Camera camera;
     std::map<std::string, std::unique_ptr<Material>> materials;
