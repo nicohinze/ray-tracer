@@ -13,7 +13,9 @@
 #include "raytracer.hpp"
 #include "sphere.hpp"
 
-Raytracer::Raytracer() {
+Raytracer::Raytracer(int width, int height, int recursion_depth, int ray_per_pixel)
+    : WIDTH(width), HEIGHT(height), MAX_RECURSION_DEPTH(recursion_depth), RAYS_PER_PIXEL(ray_per_pixel) {
+
     framebuffer.reserve(WIDTH * HEIGHT);
 
     materials["ivory"] = std::make_unique<Material>(glm::vec3(0.4, 0.4, 0.3), 0.0, 0.6, 0.3, 50.0, 0.1, 1.0, 0.0);      // NOLINT(readability-magic-numbers)
