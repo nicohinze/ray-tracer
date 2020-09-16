@@ -40,7 +40,7 @@ TEST_CASE("Ray refraction", "[ray]") {
 
     ray = Ray(glm::vec3(0, 0, 0), glm::vec3(1, 1, 0));
     n = glm::vec3(-1, 0, 0);
-    expected = glm::vec3(1, 2.0 / 3.0, 0);
-    refract = ray.refract(n, 1.5);
+    expected = glm::vec3(1, 2.0 / 3.0, 0); // NOLINT(readability-magic-numbers)
+    refract = ray.refract(n, 1.5);         // NOLINT(readability-magic-numbers)
     REQUIRE(refract == expected);
 }
