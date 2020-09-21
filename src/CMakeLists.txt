@@ -22,6 +22,8 @@ set(
     raytracer.hpp
     sphere.cpp
     sphere.hpp
+    utils.cpp
+    utils.hpp
 )
 
 add_library(ray-tracer-lib STATIC ${SOURCE_FILES})

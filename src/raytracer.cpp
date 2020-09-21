@@ -12,6 +12,7 @@
 #include "ray.hpp"
 #include "raytracer.hpp"
 #include "sphere.hpp"
+#include "utils.hpp"
 
 Raytracer::Raytracer(int width, int height, int recursion_depth, int ray_per_pixel)
     : WIDTH(width), HEIGHT(height), MAX_RECURSION_DEPTH(recursion_depth), RAYS_PER_PIXEL(ray_per_pixel) {
@@ -52,10 +53,12 @@ void Raytracer::trace_rays() {
     const auto lower_left = glm::vec3(-static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), -1.0, -1.0);
     const auto horizontal = glm::vec3(2 * static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0, 0);
     const auto vertical = glm::vec3(0, 2, 0);
+    const auto max_percent = 100;
     const auto seed = 19640;
     auto mt = std::mt19937(seed); // NOLINT(cert-msc32-c,cert-msc51-cpp)
     std::uniform_real_distribution<float> dist(0.0, 1.0);
     for (int y = 0; y < HEIGHT; ++y) {
+        show_render_progress(static_cast<int>(y * max_percent / HEIGHT));
         for (int x = 0; x < WIDTH; ++x) {
             auto avg_color = glm::vec3(0, 0, 0);
             for (int _ = 0; _ < RAYS_PER_PIXEL; ++_) {
@@ -69,6 +72,8 @@ void Raytracer::trace_rays() {
             framebuffer[y * WIDTH + x] = avg_color;
         }
     }
+    show_render_progress(max_percent);
+    std::cout << "\n";
 }
 
 void Raytracer::write_framebuffer(const std::string& filename) {
