@@ -14,7 +14,7 @@
 #include "sphere.hpp"
 #include "utils.hpp"
 
-Raytracer::Raytracer(int width, int height, int recursion_depth, int ray_per_pixel)
+Raytracer::Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t recursion_depth, std::uint32_t ray_per_pixel)
     : WIDTH(width), HEIGHT(height), MAX_RECURSION_DEPTH(recursion_depth), RAYS_PER_PIXEL(ray_per_pixel) {
 
     framebuffer.reserve(WIDTH * HEIGHT);
@@ -43,11 +43,11 @@ void Raytracer::trace_rays() {
     const auto seed = 19640;
     auto mt = std::mt19937(seed); // NOLINT(cert-msc32-c,cert-msc51-cpp)
     std::uniform_real_distribution<float> dist(0.0, 1.0);
-    for (int y = 0; y < HEIGHT; ++y) {
+    for (std::uint32_t y = 0; y < HEIGHT; ++y) {
         show_render_progress(static_cast<int>(y * max_percent / HEIGHT));
-        for (int x = 0; x < WIDTH; ++x) {
+        for (std::uint32_t x = 0; x < WIDTH; ++x) {
             auto avg_color = glm::vec3(0, 0, 0);
-            for (int _ = 0; _ < RAYS_PER_PIXEL; ++_) {
+            for (std::uint32_t _ = 0; _ < RAYS_PER_PIXEL; ++_) {
                 auto v = (static_cast<float>(HEIGHT) - static_cast<float>(y) + dist(mt)) / static_cast<float>(HEIGHT);
                 auto u = (static_cast<float>(x) + dist(mt)) / static_cast<float>(WIDTH);
                 auto ray = Ray(camera.get_origin(), glm::normalize(lower_left + u * horizontal + v * vertical));
@@ -67,15 +67,15 @@ void Raytracer::write_framebuffer(const std::string& filename) {
     ofs.open(filename, std::ios_base::out | std::ios_base::trunc);
     ofs << "P6\n"
         << WIDTH << " " << HEIGHT << "\n255\n";
-    for (int i = 0; i < WIDTH * HEIGHT; ++i) {
-        for (int j = 0; j < 3; ++j) {
+    for (std::uint32_t i = 0; i < WIDTH * HEIGHT; ++i) {
+        for (std::uint32_t j = 0; j < 3; ++j) {
             ofs << static_cast<char>(255 * std::max(0.0F, std::min(1.0F, framebuffer[i][j])));
         }
     }
     ofs.close();
 }
 
-glm::vec3 Raytracer::cast_ray(const Ray& ray, int recursion_depth) {
+glm::vec3 Raytracer::cast_ray(const Ray& ray, std::uint32_t recursion_depth) {
     static constexpr auto CYAN = glm::vec3(0.1, 1.0, 1.0);
     static constexpr auto BLUE = glm::vec3(0.1, 0.5, 1.0);
     if (recursion_depth > MAX_RECURSION_DEPTH) {
@@ -101,7 +101,7 @@ std::optional<Intersection> Raytracer::get_closest_intersection(const Ray& ray) 
     return closest_intersect;
 }
 
-glm::vec3 Raytracer::calculate_lighting(const Ray& ray, const Intersection& intersect, int recursion_depth) {
+glm::vec3 Raytracer::calculate_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth) {
     if (intersect.get_material() != nullptr) {
         auto ambient = calculate_ambient_lighting(intersect);
         auto diffuse_and_specular = calculate_diffuse_and_specular_lighting(ray, intersect);
@@ -134,7 +134,7 @@ glm::vec3 Raytracer::calculate_diffuse_and_specular_lighting(const Ray& ray, con
            intersect.get_material()->k_specular * glm::vec3(1, 1, 1) * specular_light_intensity;
 }
 
-glm::vec3 Raytracer::calculate_reflective_lighting(const Ray& ray, const Intersection& intersect, int recursion_depth) {
+glm::vec3 Raytracer::calculate_reflective_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth) {
     static const auto OFFSET = 1e-3F;
     if (intersect.get_material()->reflectivity > 0) {
         auto reflec_ray = Ray(intersect.get_position() + OFFSET * intersect.get_normal(), ray.reflect(intersect.get_normal()));
@@ -143,7 +143,7 @@ glm::vec3 Raytracer::calculate_reflective_lighting(const Ray& ray, const Interse
     return glm::vec3(0, 0, 0);
 }
 
-glm::vec3 Raytracer::calculate_refractive_lighting(const Ray& ray, const Intersection& intersect, int recursion_depth) {
+glm::vec3 Raytracer::calculate_refractive_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth) {
     static const auto OFFSET = 1e-3F;
     if (intersect.get_material()->refractivity > 0) {
         auto refrac = ray.refract(intersect.get_normal(), intersect.get_material()->refractive_index);
