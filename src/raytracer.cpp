@@ -35,20 +35,6 @@ Raytracer::Raytracer(int width, int height, int recursion_depth, int ray_per_pix
         Light(glm::vec3(30, 20, 30), 1.7)}; // NOLINT(readability-magic-numbers)
 }
 
-glm::vec3 Raytracer::cast_ray(const Ray& ray, int recursion_depth) {
-    static constexpr auto CYAN = glm::vec3(0.1, 1.0, 1.0);
-    static constexpr auto BLUE = glm::vec3(0.1, 0.5, 1.0);
-    if (recursion_depth > MAX_RECURSION_DEPTH) {
-        return glm::vec3(0, 0, 0);
-    }
-    auto closest_intersect = get_closest_intersection(ray);
-    if (closest_intersect) {
-        return calculate_lighting(ray, closest_intersect.value(), recursion_depth);
-    }
-    float t = 0.5F * (ray.get_direction().y + 1.0F);
-    return (1.0F - t) * CYAN + t * BLUE;
-}
-
 void Raytracer::trace_rays() {
     const auto lower_left = glm::vec3(-static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), -1.0, -1.0);
     const auto horizontal = glm::vec3(2 * static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0, 0);
@@ -87,6 +73,20 @@ void Raytracer::write_framebuffer(const std::string& filename) {
         }
     }
     ofs.close();
+}
+
+glm::vec3 Raytracer::cast_ray(const Ray& ray, int recursion_depth) {
+    static constexpr auto CYAN = glm::vec3(0.1, 1.0, 1.0);
+    static constexpr auto BLUE = glm::vec3(0.1, 0.5, 1.0);
+    if (recursion_depth > MAX_RECURSION_DEPTH) {
+        return glm::vec3(0, 0, 0);
+    }
+    auto closest_intersect = get_closest_intersection(ray);
+    if (closest_intersect) {
+        return calculate_lighting(ray, closest_intersect.value(), recursion_depth);
+    }
+    float t = 0.5F * (ray.get_direction().y + 1.0F);
+    return (1.0F - t) * CYAN + t * BLUE;
 }
 
 std::optional<Intersection> Raytracer::get_closest_intersection(const Ray& ray) {
