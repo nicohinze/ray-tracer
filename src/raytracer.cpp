@@ -15,7 +15,16 @@
 #include "utils.hpp"
 
 Raytracer::Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t recursion_depth, std::uint32_t ray_per_pixel)
-    : WIDTH(width), HEIGHT(height), MAX_RECURSION_DEPTH(recursion_depth), RAYS_PER_PIXEL(ray_per_pixel) {
+    : WIDTH(width)
+    , HEIGHT(height)
+    , MAX_RECURSION_DEPTH(recursion_depth)
+    , RAYS_PER_PIXEL(ray_per_pixel)
+    , LOWER_LEFT(glm::vec3(-static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), -1.0, -1.0))
+    , HORIZONTAL(glm::vec3(2 * static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0, 0))
+    , VERTICAL(glm::vec3(0, 2, 0))
+    , SEED(19640) // NOLINT(readability-magic-numbers)
+    , mt(std::mt19937(SEED))
+    , dist(std::uniform_real_distribution<float>(0.0, 1.0)) {
 
     framebuffer.reserve(WIDTH * HEIGHT);
 
@@ -36,13 +45,7 @@ Raytracer::Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t re
 }
 
 void Raytracer::trace_rays() {
-    const auto lower_left = glm::vec3(-static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), -1.0, -1.0);
-    const auto horizontal = glm::vec3(2 * static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0, 0);
-    const auto vertical = glm::vec3(0, 2, 0);
     const auto max_percent = 100;
-    const auto seed = 19640;
-    auto mt = std::mt19937(seed); // NOLINT(cert-msc32-c,cert-msc51-cpp)
-    std::uniform_real_distribution<float> dist(0.0, 1.0);
     for (std::uint32_t y = 0; y < HEIGHT; ++y) {
         show_render_progress(static_cast<int>(y * max_percent / HEIGHT));
         for (std::uint32_t x = 0; x < WIDTH; ++x) {
@@ -50,7 +53,7 @@ void Raytracer::trace_rays() {
             for (std::uint32_t _ = 0; _ < RAYS_PER_PIXEL; ++_) {
                 auto v = (static_cast<float>(HEIGHT) - static_cast<float>(y) + dist(mt)) / static_cast<float>(HEIGHT);
                 auto u = (static_cast<float>(x) + dist(mt)) / static_cast<float>(WIDTH);
-                auto ray = Ray(camera.get_origin(), glm::normalize(lower_left + u * horizontal + v * vertical));
+                auto ray = Ray(camera.get_origin(), glm::normalize(LOWER_LEFT + u * HORIZONTAL + v * VERTICAL));
                 auto color = cast_ray(ray, 0);
                 avg_color += color;
             }

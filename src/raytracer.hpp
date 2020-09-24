@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,12 @@ class Raytracer {
     const std::uint32_t HEIGHT;
     const std::uint32_t MAX_RECURSION_DEPTH;
     const std::uint32_t RAYS_PER_PIXEL;
+    const glm::vec3 LOWER_LEFT;
+    const glm::vec3 HORIZONTAL;
+    const glm::vec3 VERTICAL;
+    const std::uint32_t SEED;
+    std::mt19937 mt;
+    std::uniform_real_distribution<float> dist;
     std::vector<glm::vec3> framebuffer;
     Camera camera;
     std::map<std::string, std::unique_ptr<Material>> materials;
