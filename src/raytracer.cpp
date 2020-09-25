@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <random>
+#include <thread>
 
 #include <glm/glm.hpp>
 
@@ -22,9 +23,8 @@ Raytracer::Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t re
     , LOWER_LEFT(glm::vec3(-static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), -1.0, -1.0))
     , HORIZONTAL(glm::vec3(2 * static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0, 0))
     , VERTICAL(glm::vec3(0, 2, 0))
-    , SEED(19640) // NOLINT(readability-magic-numbers)
-    , mt(std::mt19937(SEED))
-    , dist(std::uniform_real_distribution<float>(0.0, 1.0)) {
+    , finished_threads(std::atomic<std::uint32_t>(0))
+    , finished_lines(std::atomic<std::uint32_t>(0)) {
 
     framebuffer.reserve(WIDTH * HEIGHT);
 
@@ -45,21 +45,22 @@ Raytracer::Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t re
 }
 
 void Raytracer::trace_rays() {
+    const auto n_threads = std::thread::hardware_concurrency();
     const auto max_percent = 100;
-    for (std::uint32_t y = 0; y < HEIGHT; ++y) {
-        show_render_progress(static_cast<int>(y * max_percent / HEIGHT));
-        for (std::uint32_t x = 0; x < WIDTH; ++x) {
-            auto avg_color = glm::vec3(0, 0, 0);
-            for (std::uint32_t _ = 0; _ < RAYS_PER_PIXEL; ++_) {
-                auto v = (static_cast<float>(HEIGHT) - static_cast<float>(y) + dist(mt)) / static_cast<float>(HEIGHT);
-                auto u = (static_cast<float>(x) + dist(mt)) / static_cast<float>(WIDTH);
-                auto ray = Ray(camera.get_origin(), glm::normalize(LOWER_LEFT + u * HORIZONTAL + v * VERTICAL));
-                auto color = cast_ray(ray, 0);
-                avg_color += color;
-            }
-            avg_color /= RAYS_PER_PIXEL;
-            framebuffer[y * WIDTH + x] = avg_color;
-        }
+    std::vector<std::thread> threads;
+    for (auto i = 0U; i < n_threads; ++i) {
+        auto t = std::thread(&Raytracer::render_lines, this, i, n_threads);
+        threads.push_back(std::move(t));
+    }
+    {
+        std::unique_lock<std::mutex> lock(mutex);
+        cv.wait(lock, [this, &n_threads]() {
+            show_render_progress(finished_lines * max_percent / HEIGHT);
+            return finished_threads == n_threads;
+        });
+    }
+    for (auto& t : threads) {
+        t.join();
     }
     show_render_progress(max_percent);
     std::cout << "\n";
@@ -76,6 +77,30 @@ void Raytracer::write_framebuffer(const std::string& filename) {
         }
     }
     ofs.close();
+}
+
+void Raytracer::render_lines(std::uint32_t offset, std::uint32_t stride) {
+    const auto seed = 19640;
+    auto mt = std::mt19937(seed); // NOLINT(cert-msc32-c,cert-msc51-cpp)
+    auto dist = std::uniform_real_distribution<float>(0.0, 1.0);
+    for (std::uint32_t y = offset; y < HEIGHT; y += stride) {
+        for (std::uint32_t x = 0; x < WIDTH; ++x) {
+            auto avg_color = glm::vec3(0, 0, 0);
+            for (std::uint32_t _ = 0; _ < RAYS_PER_PIXEL; ++_) {
+                auto v = (static_cast<float>(HEIGHT) - static_cast<float>(y) + dist(mt)) / static_cast<float>(HEIGHT);
+                auto u = (static_cast<float>(x) + dist(mt)) / static_cast<float>(WIDTH);
+                auto ray = Ray(camera.get_origin(), glm::normalize(LOWER_LEFT + u * HORIZONTAL + v * VERTICAL));
+                auto color = cast_ray(ray, 0);
+                avg_color += color;
+            }
+            avg_color /= RAYS_PER_PIXEL;
+            framebuffer[y * WIDTH + x] = avg_color;
+        }
+        finished_lines++;
+        cv.notify_one();
+    }
+    finished_threads++;
+    cv.notify_one();
 }
 
 glm::vec3 Raytracer::cast_ray(const Ray& ray, std::uint32_t recursion_depth) {

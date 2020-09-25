@@ -30,6 +30,8 @@ add_library(ray-tracer-lib STATIC ${SOURCE_FILES})
 target_compile_features(ray-tracer-lib PRIVATE cxx_std_17)
 set_target_properties(ray-tracer-lib PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ray-tracer-lib PRIVATE "-Wall;-Werror;-Wextra;")
+find_package(Threads REQUIRED)
+target_link_libraries(ray-tracer-lib PRIVATE Threads::Threads)
 
 add_executable(run main.cpp)
 target_link_libraries(run PRIVATE ray-tracer-lib)

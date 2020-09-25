@@ -1,8 +1,11 @@
 #pragma once
 
+#include <atomic>
+#include <condition_variable>
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <random>
 #include <string>
 #include <vector>
@@ -24,15 +27,18 @@ class Raytracer {
     const glm::vec3 LOWER_LEFT;
     const glm::vec3 HORIZONTAL;
     const glm::vec3 VERTICAL;
-    const std::uint32_t SEED;
-    std::mt19937 mt;
-    std::uniform_real_distribution<float> dist;
+
     std::vector<glm::vec3> framebuffer;
     Camera camera;
     std::map<std::string, std::unique_ptr<Material>> materials;
     std::vector<std::unique_ptr<GeometryObject>> geometry_objects;
     std::vector<Light> lights;
+    std::mutex mutex;
+    std::condition_variable cv;
+    std::atomic<std::uint32_t> finished_threads;
+    std::atomic<std::uint32_t> finished_lines;
 
+    void render_lines(std::uint32_t offset, std::uint32_t stride);
     glm::vec3 cast_ray(const Ray& ray, std::uint32_t recursion_depth);
     std::optional<Intersection> get_closest_intersection(const Ray& ray);
     glm::vec3 calculate_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth);
