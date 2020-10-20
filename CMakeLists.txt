@@ -28,7 +28,7 @@ elseif(ENABLE_SANITIZER STREQUAL "undefined")
     set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -g -fsanitize=undefined")
 endif()
 
-add_subdirectory("external/catch")
+add_subdirectory("external")
 add_subdirectory("src")
 
 include(CTest)
