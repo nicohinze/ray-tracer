@@ -11,6 +11,10 @@ option(RAY_TRACER_BUILD_TESTS "Build tests." ON)
 option(RAY_TRACER_BUILD_CLANG_TIDY "Build with clang-tidy." OFF)
 option(ENABLE_SANITIZER "Specify the enabled clang sanitizer")
 
+if(RAY_TRACER_BUILD_CLANG_TIDY)
+    set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-header-filter={src,tests}")
+endif()
+
 if(ENABLE_SANITIZER STREQUAL "address")
     message(STATUS "Building with address sanitizer (ASAN)")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O1 -fsanitize=address -fno-omit-frame-pointer")
