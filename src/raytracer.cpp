@@ -20,9 +20,11 @@ Raytracer::Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t re
     , HEIGHT(height)
     , MAX_RECURSION_DEPTH(recursion_depth)
     , RAYS_PER_PIXEL(ray_per_pixel)
-    , LOWER_LEFT(glm::vec3(-static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), -1.0, -1.0))
-    , HORIZONTAL(glm::vec3(2 * static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0, 0))
-    , VERTICAL(glm::vec3(0, 2, 0))
+    , camera(
+          glm::vec3(0, 0, 0),
+          glm::vec3(-static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), -1.0, -1.0),
+          glm::vec3(2 * static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0, 0),
+          glm::vec3(0, 2, 0))
     , finished_threads(std::atomic<std::uint32_t>(0))
     , finished_lines(std::atomic<std::uint32_t>(0)) {
 
@@ -89,7 +91,7 @@ void Raytracer::render_lines(std::uint32_t offset, std::uint32_t stride) {
             for (std::uint32_t _ = 0; _ < RAYS_PER_PIXEL; ++_) {
                 auto v = (static_cast<float>(HEIGHT) - static_cast<float>(y) + dist(mt)) / static_cast<float>(HEIGHT);
                 auto u = (static_cast<float>(x) + dist(mt)) / static_cast<float>(WIDTH);
-                auto ray = Ray(camera.get_origin(), glm::normalize(LOWER_LEFT + u * HORIZONTAL + v * VERTICAL));
+                auto ray = camera.get_ray(u, v);
                 auto color = cast_ray(ray, 0);
                 avg_color += color;
             }

@@ -1,9 +1,12 @@
 #include "camera.hpp"
 
-Camera::Camera()
-    : origin(glm::vec3(0, 0, 0)) {
+Camera::Camera(const glm::vec3& o, const glm::vec3& ll, const glm::vec3& h, const glm::vec3& v)
+    : origin(o)
+    , lower_left(ll)
+    , horizontal(h)
+    , vertical(v) {
 }
 
-glm::vec3 Camera::get_origin() const {
-    return origin;
+Ray Camera::get_ray(float u, float v) const {
+    return Ray(origin, glm::normalize(lower_left + u * horizontal + v * vertical));
 }

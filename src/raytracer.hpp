@@ -24,9 +24,6 @@ class Raytracer {
     const std::uint32_t HEIGHT;
     const std::uint32_t MAX_RECURSION_DEPTH;
     const std::uint32_t RAYS_PER_PIXEL;
-    const glm::vec3 LOWER_LEFT;
-    const glm::vec3 HORIZONTAL;
-    const glm::vec3 VERTICAL;
 
     std::vector<glm::vec3> framebuffer;
     Camera camera;
