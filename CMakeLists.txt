@@ -32,6 +32,14 @@ elseif(ENABLE_SANITIZER STREQUAL "undefined")
     set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -g -fsanitize=undefined")
 endif()
 
+set(
+    COMPILE_FLAGS
+    -Wall
+    -Werror
+    -Wextra
+    -Wpedantic
+)
+
 add_subdirectory("external")
 add_subdirectory("src")
 
