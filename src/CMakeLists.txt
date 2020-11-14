@@ -3,23 +3,14 @@ cmake_minimum_required(VERSION 3.12)
 set(
     SOURCE_FILES
     camera.cpp
-    camera.hpp
     geometryobject.cpp
-    geometryobject.hpp
     intersection.cpp
-    intersection.hpp
     light.cpp
-    light.hpp
     material.cpp
-    material.hpp
     ray.cpp
-    ray.hpp
     raytracer.cpp
-    raytracer.hpp
     sphere.cpp
-    sphere.hpp
     utils.cpp
-    utils.hpp
 )
 
 add_library(ray-tracer-lib STATIC ${SOURCE_FILES})
