@@ -8,6 +8,7 @@ project(
 )
 
 option(RAY_TRACER_BUILD_TESTS "Build tests." ON)
+option(RAY_TRACER_BUILD_COVERAGE "Build with coverage information." OFF)
 option(RAY_TRACER_BUILD_CLANG_TIDY "Build with clang-tidy." OFF)
 option(RAY_TRACER_ENABLE_SANITIZER "Specify the enabled clang sanitizer")
 
@@ -39,6 +40,20 @@ set(
     -Wextra
     -Wpedantic
 )
+
+if(RAY_TRACER_BUILD_TESTS AND RAY_TRACER_BUILD_COVERAGE)
+    message(STATUS "Building with coverage information")
+    set(COMPILE_FLAGS "${COMPILE_FLAGS}" --coverage -g -O0)
+    set(LINK_FLAGS --coverage)
+
+    add_custom_target(
+        coverage_report
+        COMMENT "Generating coverage report"
+        COMMAND lcov --capture --directory . --output-file coverage.info --rc lcov_branch_coverage=1
+        COMMAND lcov --extract coverage.info "*/${CMAKE_PROJECT_NAME}/src/*" --output-file coverage.info.filtered --rc lcov_branch_coverage=1
+        COMMAND genhtml --title "${CMAKE_PROJECT_NAME}" --legend --demangle-cpp --output-directory coverage_report --show-details --branch-coverage coverage.info.filtered
+    )
+endif()
 
 add_subdirectory("external")
 add_subdirectory("src")
