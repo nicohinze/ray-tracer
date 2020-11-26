@@ -19,5 +19,4 @@ class GeometryObject {
     GeometryObject& operator=(GeometryObject&& other) = default;
     virtual ~GeometryObject() = default;
     virtual std::optional<Intersection> intersect(const Ray& ray) const = 0;
-    const Material* get_material() const;
 };
