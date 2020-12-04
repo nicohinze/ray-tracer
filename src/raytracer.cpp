@@ -20,13 +20,19 @@ Raytracer::Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t re
     , HEIGHT(height)
     , MAX_RECURSION_DEPTH(recursion_depth)
     , RAYS_PER_PIXEL(ray_per_pixel)
-    , camera(
-          glm::vec3(0, 0, 0),
-          glm::vec3(-static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), -1.0, -1.0),
-          glm::vec3(2 * static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0, 0),
-          glm::vec3(0, 2, 0))
     , finished_threads(std::atomic<std::uint32_t>(0))
     , finished_lines(std::atomic<std::uint32_t>(0)) {
+
+    auto origin = glm::vec3(0, 0, 0);
+    auto lookto = glm::vec3(0, 0, -1);
+    auto vfov = 90.0F;
+    auto aspect_ratio = 4.0F / 3.0F;
+    camera = Camera(
+        origin,
+        origin + lookto,
+        glm::vec3(0, 1, 0),
+        vfov,
+        aspect_ratio);
 
     framebuffer.reserve(WIDTH * HEIGHT);
 

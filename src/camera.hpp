@@ -12,6 +12,7 @@ class Camera {
     glm::vec3 vertical;
 
   public:
-    Camera(const glm::vec3& o, const glm::vec3& ll, const glm::vec3& h, const glm::vec3& v);
+    Camera();
+    Camera(const glm::vec3& o, const glm::vec3& lookat, const glm::vec3& vup, float vfov, float aspect_ratio);
     Ray get_ray(float u, float v) const;
 };
