@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 set(
     TEST_FILES
+    camera_utest.cpp
     ray_utest.cpp
     sphere_utest.cpp
 )

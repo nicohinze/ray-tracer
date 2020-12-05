@@ -8,7 +8,7 @@ Camera::Camera()
     auto viewport_width = 4.0F / 3.0F * viewport_height;
     horizontal = glm::vec3(viewport_width, 0, 0);
     vertical = glm::vec3(0, viewport_height, 0);
-    lower_left = glm::vec3(viewport_width / 2.0F, viewport_height / 2.0F, -1);
+    lower_left = glm::vec3(-viewport_width / 2.0F, -viewport_height / 2.0F, -1);
 }
 
 Camera::Camera(const glm::vec3& o, const glm::vec3& lookat, const glm::vec3& vup, float vfov, float aspect_ratio)

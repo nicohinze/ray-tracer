@@ -1,0 +1,45 @@
+#define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
+
+#include "catch.hpp"
+#include <glm/glm.hpp>
+
+#include "camera.hpp"
+
+void require_vec_equal(const glm::vec3& vec1, const glm::vec3& vec2) {
+    static constexpr auto MARGIN = 0.00001;
+    REQUIRE(vec1.x == Approx(vec2.x).margin(MARGIN));
+    REQUIRE(vec1.y == Approx(vec2.y).margin(MARGIN));
+    REQUIRE(vec1.z == Approx(vec2.z).margin(MARGIN));
+}
+
+TEST_CASE("Camera settings", "[camera]") {
+    auto origin = glm::vec3(0, 0, 0);
+    auto c = Camera();
+    auto r = c.get_ray(0, 0);
+    auto expected = Ray(origin, glm::vec3(-0.68599, -0.51449, -0.51449));
+    require_vec_equal(r.get_origin(), expected.get_origin());
+    require_vec_equal(r.get_direction(), expected.get_direction());
+    r = c.get_ray(0.5, 0.5);
+    expected = Ray(origin, glm::vec3(0, 0, -1));
+    require_vec_equal(r.get_origin(), expected.get_origin());
+    require_vec_equal(r.get_direction(), expected.get_direction());
+
+    origin = glm::vec3(0, static_cast<float>(M_PI) / 4.0F, -static_cast<float>(M_PI) / 4.0F);
+    auto lookto = glm::vec3(0, -1, -1);
+    auto vfov = 90.0F;
+    auto aspect_ratio = 4.0F / 3.0F;
+    c = Camera(
+        origin,
+        origin + lookto,
+        glm::vec3(0, 1, 0),
+        vfov,
+        aspect_ratio);
+    r = c.get_ray(0, 0);
+    expected = Ray(origin, glm::vec3(-0.68599, -0.7276, 0));
+    require_vec_equal(r.get_origin(), expected.get_origin());
+    require_vec_equal(r.get_direction(), expected.get_direction());
+    r = c.get_ray(0.5, 0.5);
+    expected = Ray(origin, glm::vec3(0, -0.7071, -0.7071));
+    require_vec_equal(r.get_origin(), expected.get_origin());
+    require_vec_equal(r.get_direction(), expected.get_direction());
+}
