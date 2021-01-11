@@ -3,22 +3,22 @@
 #include "camera.hpp"
 #include "utils.hpp"
 
-Camera::Camera()
+Camera::Camera() // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
     : origin(glm::vec3(0, 0, 0))
     , u(glm::vec3(1, 0, 0))
     , v(glm::vec3(0, 1, 0))
     , w(glm::vec3(0, 0, 1))
     , lens_radius(0) {
     auto viewport_height = 2.0F;
-    auto viewport_width = 4.0F / 3.0F * viewport_height;
+    auto viewport_width = 4.0F / 3.0F * viewport_height; // NOLINT(readability-magic-numbers)
     horizontal = glm::vec3(viewport_width, 0, 0);
     vertical = glm::vec3(0, viewport_height, 0);
     lower_left = glm::vec3(-viewport_width / 2.0F, -viewport_height / 2.0F, -1);
 }
 
-Camera::Camera(const glm::vec3& o, const glm::vec3& lookat, const glm::vec3& vup, float vfov, float aspect_ratio, float aperture, float focus_dist)
+Camera::Camera(const glm::vec3& o, const glm::vec3& lookat, const glm::vec3& vup, float vfov, float aspect_ratio, float aperture, float focus_dist) // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
     : origin(o) {
-    auto theta = static_cast<float>(M_PI) / 180.0F * vfov;
+    auto theta = static_cast<float>(M_PI) / 180.0F * vfov; // NOLINT(readability-magic-numbers)
     auto h = std::tan(theta / 2.0F);
     auto viewport_height = 2.0F * h;
     auto viewport_width = aspect_ratio * viewport_height;

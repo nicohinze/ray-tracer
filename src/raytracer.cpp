@@ -26,10 +26,10 @@ Raytracer::Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t re
     auto origin = glm::vec3(0, 0, 0);
     auto lookto = glm::vec3(0, 0, -1);
     auto vup = glm::vec3(0, 1, 0);
-    auto vfov = 90.0F;
-    auto aspect_ratio = 4.0F / 3.0F;
+    auto vfov = 90.0F;               // NOLINT(readability-magic-numbers)
+    auto aspect_ratio = 4.0F / 3.0F; // NOLINT(readability-magic-numbers)
     auto aperture = 1.0F;
-    auto focus_dist = 16.0F;
+    auto focus_dist = 16.0F; // NOLINT(readability-magic-numbers)
     camera = Camera(
         origin,
         origin + lookto,
