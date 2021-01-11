@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <iostream>
+#include <random>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -38,4 +39,16 @@ void show_render_progress(std::uint32_t percent) {
     static const auto TOTAL = get_terminal_width();
     std::cout << "Rendering:";
     show_progress(percent, TOTAL - PREFIX_STRING.length());
+}
+
+glm::vec3 random_in_unit_disk() {
+    static const thread_local auto SEED = 19640;
+    static thread_local auto mt = std::mt19937(SEED); // NOLINT(cert-msc32-c,cert-msc51-cpp)
+    static thread_local auto dist = std::uniform_real_distribution<float>(-1.0, 1.0);
+    while (true) {
+        auto p = glm::vec3(dist(mt), dist(mt), 0);
+        if (glm::length(p) <= 1) {
+            return p;
+        }
+    }
 }
