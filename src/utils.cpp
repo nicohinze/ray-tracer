@@ -37,7 +37,7 @@ void show_progress(std::uint32_t percent, std::size_t total_length) {
 void show_render_progress(std::uint32_t percent) {
     static const auto PREFIX_STRING = std::string("Rendering:");
     static const auto TOTAL = get_terminal_width();
-    std::cout << "Rendering:";
+    std::cout << PREFIX_STRING;
     show_progress(percent, TOTAL - PREFIX_STRING.length());
 }
 
