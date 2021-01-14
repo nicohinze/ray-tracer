@@ -21,7 +21,9 @@ Raytracer::Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t re
     , MAX_RECURSION_DEPTH(recursion_depth)
     , RAYS_PER_PIXEL(ray_per_pixel)
     , finished_threads(std::atomic<std::uint32_t>(0))
-    , finished_lines(std::atomic<std::uint32_t>(0)) {
+    , finished_lines(std::atomic<std::uint32_t>(0))
+    , rays_cast(std::atomic<std::uint32_t>(0))
+    , intersection_tests(std::atomic<std::uint32_t>(0)) {
 
     auto origin = glm::vec3(0, 0, 0);
     auto lookto = glm::vec3(0, 0, -1);
@@ -92,6 +94,14 @@ void Raytracer::write_framebuffer(const std::string& filename) {
     ofs.close();
 }
 
+std::uint32_t Raytracer::get_rays_cast() const {
+    return rays_cast;
+}
+
+std::uint32_t Raytracer::get_intersection_tests() const {
+    return intersection_tests;
+}
+
 void Raytracer::render_lines(std::uint32_t offset, std::uint32_t stride) {
     const auto seed = 19640;
     auto mt = std::mt19937(seed); // NOLINT(cert-msc32-c,cert-msc51-cpp)
@@ -122,6 +132,7 @@ glm::vec3 Raytracer::cast_ray(const Ray& ray, std::uint32_t recursion_depth) {
     if (recursion_depth > MAX_RECURSION_DEPTH) {
         return glm::vec3(0, 0, 0);
     }
+    rays_cast++;
     auto closest_intersect = get_closest_intersection(ray);
     if (closest_intersect) {
         return calculate_lighting(ray, closest_intersect.value(), recursion_depth);
@@ -133,6 +144,7 @@ glm::vec3 Raytracer::cast_ray(const Ray& ray, std::uint32_t recursion_depth) {
 std::optional<Intersection> Raytracer::get_closest_intersection(const Ray& ray) {
     std::optional<Intersection> closest_intersect;
     for (auto& object : geometry_objects) {
+        intersection_tests++;
         if (auto intersect = object->intersect(ray)) {
             if (!closest_intersect || intersect->get_distance() < closest_intersect->get_distance()) {
                 closest_intersect = intersect;

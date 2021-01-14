@@ -34,6 +34,8 @@ class Raytracer {
     std::condition_variable cv;
     std::atomic<std::uint32_t> finished_threads;
     std::atomic<std::uint32_t> finished_lines;
+    std::atomic<std::uint32_t> rays_cast;
+    std::atomic<std::uint32_t> intersection_tests;
 
     void render_lines(std::uint32_t offset, std::uint32_t stride);
     glm::vec3 cast_ray(const Ray& ray, std::uint32_t recursion_depth);
@@ -49,4 +51,6 @@ class Raytracer {
     Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t recursion_depth, std::uint32_t ray_per_pixel);
     void trace_rays();
     void write_framebuffer(const std::string& filename);
+    std::uint32_t get_rays_cast() const;
+    std::uint32_t get_intersection_tests() const;
 };

@@ -20,9 +20,11 @@ int main() {
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed);
     ms = std::chrono::duration_cast<std::chrono::milliseconds>(ms - s);
     s = std::chrono::duration_cast<std::chrono::seconds>(s - min);
-    std::cout << "Rendering took "
+    std::cout << "Rendering took: "
               << std::setfill('0') << std::setw(2) << min.count() << ':'
               << std::setfill('0') << std::setw(2) << s.count() << '.'
-              << std::setfill('0') << std::setw(3) << ms.count() << std::endl;
+              << std::setfill('0') << std::setw(3) << ms.count() << std::endl
+              << "Rays cast: " << raytracer.get_rays_cast() << std::endl
+              << "Intersection tests: " << raytracer.get_intersection_tests() << std::endl;
     raytracer.write_framebuffer("out.ppm");
 }
