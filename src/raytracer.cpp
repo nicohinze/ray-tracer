@@ -70,15 +70,19 @@ void Raytracer::trace_rays() {
     {
         std::unique_lock<std::mutex> lock(mutex);
         cv.wait(lock, [this, &n_threads]() {
-            show_render_progress(finished_lines * max_percent / HEIGHT);
+            if (show_progress) {
+                show_render_progress(finished_lines * max_percent / HEIGHT);
+            }
             return finished_threads == n_threads;
         });
     }
     for (auto& t : threads) {
         t.join();
     }
-    show_render_progress(max_percent);
-    std::cout << "\n";
+    if (show_progress) {
+        show_render_progress(max_percent);
+        std::cout << "\n";
+    }
 }
 
 void Raytracer::write_framebuffer(const std::string& filename) {
@@ -100,6 +104,10 @@ std::uint32_t Raytracer::get_rays_cast() const {
 
 std::uint32_t Raytracer::get_intersection_tests() const {
     return intersection_tests;
+}
+
+void Raytracer::set_show_progress(bool show) {
+    show_progress = show;
 }
 
 void Raytracer::render_lines(std::uint32_t offset, std::uint32_t stride) {

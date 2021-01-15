@@ -37,6 +37,8 @@ class Raytracer {
     std::atomic<std::uint32_t> rays_cast;
     std::atomic<std::uint32_t> intersection_tests;
 
+    bool show_progress;
+
     void render_lines(std::uint32_t offset, std::uint32_t stride);
     glm::vec3 cast_ray(const Ray& ray, std::uint32_t recursion_depth);
     std::optional<Intersection> get_closest_intersection(const Ray& ray);
@@ -53,4 +55,5 @@ class Raytracer {
     void write_framebuffer(const std::string& filename);
     std::uint32_t get_rays_cast() const;
     std::uint32_t get_intersection_tests() const;
+    void set_show_progress(bool show);
 };
