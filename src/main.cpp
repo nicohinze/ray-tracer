@@ -7,8 +7,8 @@
 
 int main() {
     const auto enable_output = true;
-    const auto width = 1024;
-    const auto height = 768;
+    const auto width = 1920;
+    const auto height = 1080;
     const auto recursion_depth = 4;
     const auto rays_per_pixel = 100;
     auto raytracer = Raytracer(width, height, recursion_depth, rays_per_pixel);
