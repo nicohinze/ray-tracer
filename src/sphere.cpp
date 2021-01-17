@@ -31,3 +31,7 @@ std::optional<Intersection> Sphere::intersect(const Ray& ray) const {
     }
     return std::nullopt;
 }
+
+bool Sphere::intersect(const Sphere& other) {
+    return glm::length(center - other.center) < radius + other.radius;
+}

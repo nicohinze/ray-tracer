@@ -17,4 +17,5 @@ class Sphere : public GeometryObject {
   public:
     Sphere(const glm::vec3& c, float r, const Material* m);
     std::optional<Intersection> intersect(const Ray& ray) const override;
+    bool intersect(const Sphere& other);
 };
