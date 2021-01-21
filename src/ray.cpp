@@ -25,5 +25,8 @@ glm::vec3 Ray::refract(const glm::vec3& n, float refractive_index) const {
         eta = refractive_index / 1.0F;
     }
     auto k = 1.0F - eta * eta * (1.0F - cosi * cosi);
+    if (k < 0) {
+        return reflect(n1);
+    }
     return eta * direction + (eta * cosi - std::sqrt(k)) * n1;
 }
