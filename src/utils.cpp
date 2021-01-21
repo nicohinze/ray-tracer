@@ -41,6 +41,13 @@ void show_render_progress(std::uint32_t percent) {
     show_progress(percent, TOTAL - PREFIX_STRING.length());
 }
 
+float random_float() {
+    static const thread_local auto SEED = 19640;
+    static thread_local auto mt = std::mt19937(SEED); // NOLINT(cert-msc32-c,cert-msc51-cpp)
+    static thread_local auto dist = std::uniform_real_distribution<float>(0.0, 1.0);
+    return dist(mt);
+}
+
 glm::vec3 random_in_unit_disk() {
     static const thread_local auto SEED = 19640;
     static thread_local auto mt = std::mt19937(SEED); // NOLINT(cert-msc32-c,cert-msc51-cpp)
