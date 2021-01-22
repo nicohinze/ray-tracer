@@ -9,10 +9,9 @@ int main() {
     const auto enable_output = true;
     const auto width = 1920;
     const auto height = 1080;
-    const auto recursion_depth = 4;
+    const auto recursion_depth = 10;
     const auto rays_per_pixel = 100;
     auto raytracer = Raytracer(width, height, recursion_depth, rays_per_pixel);
-    raytracer.set_show_progress(enable_output);
     auto start = std::chrono::steady_clock::now();
     raytracer.trace_rays();
     auto stop = std::chrono::steady_clock::now();

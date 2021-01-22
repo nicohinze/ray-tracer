@@ -23,40 +23,11 @@ Raytracer::Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t re
     , finished_threads(std::atomic<std::uint32_t>(0))
     , finished_lines(std::atomic<std::uint32_t>(0))
     , rays_cast(std::atomic<std::uint32_t>(0))
-    , intersection_tests(std::atomic<std::uint32_t>(0)) {
-
-    auto origin = glm::vec3(0, 0, 0);
-    auto lookto = glm::vec3(0, 0, -1);
-    auto vup = glm::vec3(0, 1, 0);
-    auto vfov = 90.0F; // NOLINT(readability-magic-numbers)
-    auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
-    auto aperture = 1.0F;
-    auto focus_dist = 16.0F; // NOLINT(readability-magic-numbers)
-    camera = Camera(
-        origin,
-        origin + lookto,
-        vup,
-        vfov,
-        aspect_ratio,
-        aperture,
-        focus_dist);
-
-    framebuffer.reserve(WIDTH * HEIGHT);
-
-    materials["ivory"] = std::make_unique<Material>(glm::vec3(0.4, 0.4, 0.3), 0.0, 0.6, 0.3, 50.0, 0.1, 1.0, 0.0);      // NOLINT(readability-magic-numbers)
-    materials["red_rubber"] = std::make_unique<Material>(glm::vec3(0.3, 0.1, 0.1), 0.0, 0.9, 0.1, 10.0, 0.0, 1.0, 0.0); // NOLINT(readability-magic-numbers)
-    materials["mirror"] = std::make_unique<Material>(glm::vec3(1.0, 1.0, 1.0), 0.0, 0.0, 10.0, 1425.0, 0.8, 1.0, 0.0);  // NOLINT(readability-magic-numbers)
-    materials["glass"] = std::make_unique<Material>(glm::vec3(0.6, 0.7, 0.8), 0.0, 0.0, 0.5, 125.0, 0.1, 1.5, 0.8);     // NOLINT(readability-magic-numbers)
-
-    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-3, 0, -16), 2, materials["ivory"].get()));          // NOLINT(readability-magic-numbers)
-    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-1.0, -1.5, -12), 2, materials["glass"].get()));     // NOLINT(readability-magic-numbers)
-    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(1.5, -0.5, -18), 3, materials["red_rubber"].get())); // NOLINT(readability-magic-numbers)
-    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(7, 5, -18), 4, materials["mirror"].get()));          // NOLINT(readability-magic-numbers)
-
-    lights = {
-        Light(glm::vec3(-20, 20, 20), 1.5), // NOLINT(readability-magic-numbers)
-        Light(glm::vec3(30, 50, -25), 1.8), // NOLINT(readability-magic-numbers)
-        Light(glm::vec3(30, 20, 30), 1.7)}; // NOLINT(readability-magic-numbers)
+    , intersection_tests(std::atomic<std::uint32_t>(0))
+    , show_progress(true) {
+    framebuffer.reserve(width * height);
+    create_simple_scene(width, height);
+    // create_complex_scene(width, height);
 }
 
 void Raytracer::trace_rays() {
@@ -220,4 +191,100 @@ bool Raytracer::is_in_shadow(const Ray& ray, float light_distance) {
         return intersect->get_distance() < light_distance;
     }
     return false;
+}
+
+void Raytracer::create_simple_scene(std::uint32_t width, std::uint32_t height) {
+    auto origin = glm::vec3(0, 0, 0);
+    auto lookto = glm::vec3(0, 0, -1);
+    auto vup = glm::vec3(0, 1, 0);
+    auto vfov = 90.0F; // NOLINT(readability-magic-numbers)
+    auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+    auto aperture = 0.75F;   // NOLINT(readability-magic-numbers)
+    auto focus_dist = 16.0F; // NOLINT(readability-magic-numbers)
+    camera = Camera(
+        origin,
+        origin + lookto,
+        vup,
+        vfov,
+        aspect_ratio,
+        aperture,
+        focus_dist);
+
+    materials["ivory"] = std::make_unique<Material>(glm::vec3(0.4, 0.4, 0.3), 0.1, 0.6, 0.3, 50.0, 0.1, 1.0, 0.0);      // NOLINT(readability-magic-numbers)
+    materials["red_rubber"] = std::make_unique<Material>(glm::vec3(0.3, 0.1, 0.1), 0.1, 0.9, 0.1, 10.0, 0.0, 1.0, 0.0); // NOLINT(readability-magic-numbers)
+    materials["mirror"] = std::make_unique<Material>(glm::vec3(1.0, 1.0, 1.0), 0.0, 0.0, 10.0, 1425.0, 0.8, 1.0, 0.0);  // NOLINT(readability-magic-numbers)
+    materials["glass"] = std::make_unique<Material>(glm::vec3(0.6, 0.7, 0.8), 0.0, 0.0, 0.5, 125.0, 0.1, 1.5, 0.8);     // NOLINT(readability-magic-numbers)
+
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-3, 0, -16), 2, materials["ivory"].get()));          // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-1.0, -1.5, -12), 2, materials["glass"].get()));     // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(1.5, -0.5, -18), 3, materials["red_rubber"].get())); // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(7, 5, -18), 4, materials["mirror"].get()));          // NOLINT(readability-magic-numbers)
+
+    lights = {
+        Light(glm::vec3(-20, 20, 20), 1.5), // NOLINT(readability-magic-numbers)
+        Light(glm::vec3(30, 50, -25), 1.8), // NOLINT(readability-magic-numbers)
+        Light(glm::vec3(30, 20, 30), 1.7)}; // NOLINT(readability-magic-numbers)
+}
+
+void Raytracer::create_complex_scene(std::uint32_t width, std::uint32_t height) {
+    auto origin = glm::vec3(13, 2, 3); // NOLINT(readability-magic-numbers)
+    auto lookat = glm::vec3(0, 0, 0);
+    auto vup = glm::vec3(0, 1, 0);
+    auto vfov = 20.0F; // NOLINT(readability-magic-numbers)
+    auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+    auto aperture = 0.1F;    // NOLINT(readability-magic-numbers)
+    auto focus_dist = 10.0F; // NOLINT(readability-magic-numbers)
+    camera = Camera(
+        origin,
+        lookat,
+        vup,
+        vfov,
+        aspect_ratio,
+        aperture,
+        focus_dist);
+
+    materials["ground"] = std::make_unique<Material>(glm::vec3(0.5, 0.5, 0.5), 0.1, 0.4, 0.01, 1.0, 0.0, 1.0, 0.0);      // NOLINT(readability-magic-numbers)
+    materials["big_diffuse"] = std::make_unique<Material>(glm::vec3(0.4, 0.2, 0.1), 0.1, 0.5, 0.0, 10.0, 0.0, 1.0, 0.0); // NOLINT(readability-magic-numbers)
+    materials["big_metal"] = std::make_unique<Material>(glm::vec3(0.7, 0.6, 0.5), 0.0, 0.0, 1.0, 1000.0, 0.7, 1.0, 0.0); // NOLINT(readability-magic-numbers)
+    materials["glass"] = std::make_unique<Material>(glm::vec3(0.6, 0.7, 0.8), 0.0, 0.0, 0.5, 125.0, 0.1, 1.5, 0.8);      // NOLINT(readability-magic-numbers)
+
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(0, -1000, 0), 1000, materials["ground"].get())); // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(0, 1, 0), 1, materials["glass"].get()));         // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-4, 1, 0), 1, materials["big_diffuse"].get()));  // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(4, 1, 0), 1, materials["big_metal"].get()));     // NOLINT(readability-magic-numbers)
+
+    for (auto a = -11; a < 11; a++) {     // NOLINT(readability-magic-numbers)
+        for (auto b = -11; b < 11; b++) { // NOLINT(readability-magic-numbers)
+            auto choose_mat = random_float();
+            auto center = glm::vec3(a + 0.9 * random_float(), 0.2, b + 0.9 * random_float()); // NOLINT(readability-magic-numbers)
+            auto s = Sphere(center, 0.2, nullptr);                                            // NOLINT(readability-magic-numbers)
+            bool intersect = false;
+            for (const auto& object : geometry_objects) {
+                if (s.intersect(*dynamic_cast<Sphere*>(object.get()))) {
+                    intersect = true;
+                    break;
+                }
+            }
+            if (!intersect) {
+                if (choose_mat < 0.8) { // NOLINT(readability-magic-numbers)
+                    // diffuse
+                    auto random_color = glm::vec3(random_float(), random_float(), random_float());
+                    materials[std::to_string(a) + " " + std::to_string(b)] = std::make_unique<Material>(random_color, 0.1, 0.4, 0.0, 10.0, 0.0, 1.0, 0.0); // NOLINT(readability-magic-numbers)
+                    geometry_objects.push_back(std::make_unique<Sphere>(center, 0.2, materials[std::to_string(a) + " " + std::to_string(b)].get()));       // NOLINT(readability-magic-numbers)
+                } else if (choose_mat < 0.95) {                                                                                                            // NOLINT(readability-magic-numbers)
+                    // metal
+                    auto r = random_float();
+                    materials[std::to_string(a) + " " + std::to_string(b)] = std::make_unique<Material>(glm::vec3(r, r, r), 0.0, 0.0, 1.0, 100.0, 0.5, 1.0, 0.0); // NOLINT(readability-magic-numbers)
+                    geometry_objects.push_back(std::make_unique<Sphere>(center, 0.2, materials[std::to_string(a) + " " + std::to_string(b)].get()));              // NOLINT(readability-magic-numbers)
+                } else {
+                    // glass
+                    geometry_objects.push_back(std::make_unique<Sphere>(center, 0.2, materials["glass"].get())); // NOLINT(readability-magic-numbers)
+                }
+            }
+        }
+    }
+    lights = {
+        Light(glm::vec3(-20, 20, 20), 1.5), // NOLINT(readability-magic-numbers)
+        Light(glm::vec3(30, 50, -25), 1.8), // NOLINT(readability-magic-numbers)
+        Light(glm::vec3(30, 20, 30), 1.7)}; // NOLINT(readability-magic-numbers)
 }
