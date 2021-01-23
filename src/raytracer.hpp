@@ -54,7 +54,7 @@ class Raytracer {
   public:
     Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t recursion_depth, std::uint32_t ray_per_pixel);
     void trace_rays();
-    void write_framebuffer(const std::string& filename);
+    void write_framebuffer(const std::string& filename) const;
     std::uint32_t get_rays_cast() const;
     std::uint32_t get_intersection_tests() const;
     void set_show_progress(bool show);
