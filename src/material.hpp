@@ -1,17 +1,16 @@
 #pragma once
 
+#include <utility>
+
 #include <glm/glm.hpp>
+
+#include "ray.hpp"
 
 class Material {
   public:
-    const glm::vec3 color;
-    const float k_ambient;
-    const float k_diffuse;
-    const float k_specular;
-    const float shininess;
-    const float reflectivity;
-    const float refractive_index;
-    const float refractivity;
+    virtual ~Material() = default;
+    virtual std::pair<glm::vec3, Ray> scatter(const Ray& ray, const glm::vec3& pos, const glm::vec3& n) const = 0;
 
-    Material(const glm::vec3& c, float ka, float kd, float ks, float s, float refl, float ri, float refr);
+  protected:
+    static constexpr auto OFFSET = 1e-3F;
 };

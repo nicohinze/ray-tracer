@@ -43,11 +43,6 @@ class Raytracer {
     glm::vec3 cast_ray(const Ray& ray, std::uint32_t recursion_depth);
     std::optional<Intersection> get_closest_intersection(const Ray& ray);
     glm::vec3 calculate_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth);
-    static glm::vec3 calculate_ambient_lighting(const Intersection& intersect);
-    glm::vec3 calculate_diffuse_and_specular_lighting(const Ray& ray, const Intersection& intersect);
-    glm::vec3 calculate_reflective_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth);
-    glm::vec3 calculate_refractive_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth);
-    bool is_in_shadow(const Ray& ray, float light_distance);
     void create_simple_scene(std::uint32_t width, std::uint32_t height);
     void create_complex_scene(std::uint32_t width, std::uint32_t height);
 

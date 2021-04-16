@@ -4,10 +4,12 @@ set(TARGET ray-tracer)
 set(
     SOURCE_FILES
     camera.cpp
+    dielectric.cpp
     geometryobject.cpp
     intersection.cpp
+    lambertian.cpp
     light.cpp
-    material.cpp
+    metal.cpp
     ray.cpp
     raytracer.cpp
     sphere.cpp

@@ -7,9 +7,11 @@
 
 #include <glm/glm.hpp>
 
+#include "dielectric.hpp"
 #include "geometryobject.hpp"
+#include "lambertian.hpp"
 #include "light.hpp"
-#include "material.hpp"
+#include "metal.hpp"
 #include "ray.hpp"
 #include "raytracer.hpp"
 #include "sphere.hpp"
@@ -26,8 +28,8 @@ Raytracer::Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t re
     , intersection_tests(std::atomic<std::uint32_t>(0))
     , show_progress(true) {
     framebuffer.reserve(width * height);
-    create_simple_scene(width, height);
-    // create_complex_scene(width, height);
+    // create_simple_scene(width, height);
+    create_complex_scene(width, height);
 }
 
 void Raytracer::trace_rays() {
@@ -63,7 +65,7 @@ void Raytracer::write_framebuffer(const std::string& filename) const {
         << WIDTH << " " << HEIGHT << "\n255\n";
     for (std::uint32_t i = 0; i < WIDTH * HEIGHT; ++i) {
         for (std::uint32_t j = 0; j < 3; ++j) {
-            ofs << static_cast<unsigned char>(255 * std::max(0.0F, std::min(1.0F, framebuffer[i][j])));
+            ofs << static_cast<unsigned char>(255 * std::max(0.0F, std::min(1.0F, std::sqrt(framebuffer[i][j]))));
         }
     }
     ofs.close();
@@ -106,8 +108,8 @@ void Raytracer::render_lines(std::uint32_t offset, std::uint32_t stride) {
 }
 
 glm::vec3 Raytracer::cast_ray(const Ray& ray, std::uint32_t recursion_depth) {
-    static constexpr auto CYAN = glm::vec3(0.1, 1.0, 1.0);
-    static constexpr auto BLUE = glm::vec3(0.1, 0.5, 1.0);
+    static constexpr auto WHITE = glm::vec3(1.0, 1.0, 1.0);
+    static constexpr auto LIGHT_BLUE = glm::vec3(0.5, 0.7, 1.0);
     if (recursion_depth > MAX_RECURSION_DEPTH) {
         return glm::vec3(0, 0, 0);
     }
@@ -117,7 +119,7 @@ glm::vec3 Raytracer::cast_ray(const Ray& ray, std::uint32_t recursion_depth) {
         return calculate_lighting(ray, closest_intersect.value(), recursion_depth);
     }
     const float t = 0.5F * (ray.get_direction().y + 1.0F);
-    return (1.0F - t) * CYAN + t * BLUE;
+    return (1.0F - t) * WHITE + t * LIGHT_BLUE;
 }
 
 std::optional<Intersection> Raytracer::get_closest_intersection(const Ray& ray) {
@@ -135,62 +137,10 @@ std::optional<Intersection> Raytracer::get_closest_intersection(const Ray& ray) 
 
 glm::vec3 Raytracer::calculate_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth) {
     if (intersect.get_material() != nullptr) {
-        const auto ambient = calculate_ambient_lighting(intersect);
-        const auto diffuse_and_specular = calculate_diffuse_and_specular_lighting(ray, intersect);
-        const auto reflec = calculate_reflective_lighting(ray, intersect, recursion_depth);
-        const auto refrac = calculate_refractive_lighting(ray, intersect, recursion_depth);
-        return ambient + diffuse_and_specular + reflec + refrac;
+        const auto [color, scattered] = intersect.get_material()->scatter(ray, intersect.get_position(), intersect.get_normal());
+        return color * cast_ray(scattered, recursion_depth + 1);
     }
     return intersect.get_normal();
-}
-
-glm::vec3 Raytracer::calculate_ambient_lighting(const Intersection& intersect) {
-    return intersect.get_material()->k_ambient * intersect.get_material()->color;
-}
-
-glm::vec3 Raytracer::calculate_diffuse_and_specular_lighting(const Ray& ray, const Intersection& intersect) {
-    static constexpr auto OFFSET = 1e-3F;
-    float diffuse_light_intensity = 0;
-    float specular_light_intensity = 0;
-    for (const auto l : lights) {
-        const auto light_direction = glm::normalize(l.get_position() - intersect.get_position());
-        const auto shadow_ray = Ray(intersect.get_position() + OFFSET * intersect.get_normal(), light_direction);
-        if (!is_in_shadow(shadow_ray, glm::length(l.get_position() - intersect.get_position()))) {
-            diffuse_light_intensity += l.get_intensity() * std::max(0.0F, glm::dot(intersect.get_normal(), light_direction));
-            specular_light_intensity += l.get_intensity() * std::pow(
-                                                                std::max(0.0F, glm::dot(light_direction, ray.reflect(intersect.get_normal()))),
-                                                                intersect.get_material()->shininess);
-        }
-    }
-    return intersect.get_material()->k_diffuse * intersect.get_material()->color * diffuse_light_intensity +
-           intersect.get_material()->k_specular * glm::vec3(1, 1, 1) * specular_light_intensity;
-}
-
-glm::vec3 Raytracer::calculate_reflective_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth) {
-    static const auto OFFSET = 1e-3F;
-    if (intersect.get_material()->reflectivity > 0) {
-        auto reflec_ray = Ray(intersect.get_position() + OFFSET * intersect.get_normal(), ray.reflect(intersect.get_normal()));
-        return intersect.get_material()->reflectivity * cast_ray(reflec_ray, recursion_depth + 1);
-    }
-    return glm::vec3(0, 0, 0);
-}
-
-glm::vec3 Raytracer::calculate_refractive_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth) {
-    static const auto OFFSET = 1e-3F;
-    if (intersect.get_material()->refractivity > 0) {
-        const auto refrac = ray.refract(intersect.get_normal(), intersect.get_material()->refractive_index);
-        const auto k = glm::dot(refrac, intersect.get_normal()) < 0 ? -1.0F : 1.0F;
-        const auto refrac_ray = Ray(intersect.get_position() + k * OFFSET * intersect.get_normal(), refrac);
-        return intersect.get_material()->refractivity * cast_ray(refrac_ray, recursion_depth + 1);
-    }
-    return glm::vec3(0, 0, 0);
-}
-
-bool Raytracer::is_in_shadow(const Ray& ray, float light_distance) {
-    if (const auto intersect = get_closest_intersection(ray)) {
-        return intersect->get_distance() < light_distance;
-    }
-    return false;
 }
 
 void Raytracer::create_simple_scene(std::uint32_t width, std::uint32_t height) {
@@ -210,20 +160,15 @@ void Raytracer::create_simple_scene(std::uint32_t width, std::uint32_t height) {
         aperture,
         focus_dist);
 
-    materials["ivory"] = std::make_unique<Material>(glm::vec3(0.4, 0.4, 0.3), 0.1, 0.6, 0.3, 50.0, 0.1, 1.0, 0.0);      // NOLINT(readability-magic-numbers)
-    materials["red_rubber"] = std::make_unique<Material>(glm::vec3(0.3, 0.1, 0.1), 0.1, 0.9, 0.1, 10.0, 0.0, 1.0, 0.0); // NOLINT(readability-magic-numbers)
-    materials["mirror"] = std::make_unique<Material>(glm::vec3(1.0, 1.0, 1.0), 0.0, 0.0, 10.0, 1425.0, 0.8, 1.0, 0.0);  // NOLINT(readability-magic-numbers)
-    materials["glass"] = std::make_unique<Material>(glm::vec3(0.6, 0.7, 0.8), 0.0, 0.0, 0.5, 125.0, 0.1, 1.5, 0.8);     // NOLINT(readability-magic-numbers)
+    materials["ivory"] = std::make_unique<Lambertian>(glm::vec3(0.4, 0.4, 0.3));        // NOLINT(readability-magic-numbers)
+    materials["red_rubber"] = std::make_unique<Lambertian>(glm::vec3(0.9, 0.05, 0.05)); // NOLINT(readability-magic-numbers)
+    materials["mirror"] = std::make_unique<Metal>(glm::vec3(1.0, 1.0, 1.0), 0.0);       // NOLINT(readability-magic-numbers)
+    materials["glass"] = std::make_unique<Dielectric>(1.5);                             // NOLINT(readability-magic-numbers)
 
     geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-3, 0, -16), 2, materials["ivory"].get()));          // NOLINT(readability-magic-numbers)
     geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-1.0, -1.5, -12), 2, materials["glass"].get()));     // NOLINT(readability-magic-numbers)
     geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(1.5, -0.5, -18), 3, materials["red_rubber"].get())); // NOLINT(readability-magic-numbers)
     geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(7, 5, -18), 4, materials["mirror"].get()));          // NOLINT(readability-magic-numbers)
-
-    lights = {
-        Light(glm::vec3(-20, 20, 20), 1.5), // NOLINT(readability-magic-numbers)
-        Light(glm::vec3(30, 50, -25), 1.8), // NOLINT(readability-magic-numbers)
-        Light(glm::vec3(30, 20, 30), 1.7)}; // NOLINT(readability-magic-numbers)
 }
 
 void Raytracer::create_complex_scene(std::uint32_t width, std::uint32_t height) {
@@ -243,18 +188,18 @@ void Raytracer::create_complex_scene(std::uint32_t width, std::uint32_t height) 
         aperture,
         focus_dist);
 
-    materials["ground"] = std::make_unique<Material>(glm::vec3(0.5, 0.5, 0.5), 0.1, 0.4, 0.01, 1.0, 0.0, 1.0, 0.0);      // NOLINT(readability-magic-numbers)
-    materials["big_diffuse"] = std::make_unique<Material>(glm::vec3(0.4, 0.2, 0.1), 0.1, 0.5, 0.0, 10.0, 0.0, 1.0, 0.0); // NOLINT(readability-magic-numbers)
-    materials["big_metal"] = std::make_unique<Material>(glm::vec3(0.7, 0.6, 0.5), 0.0, 0.0, 1.0, 1000.0, 0.7, 1.0, 0.0); // NOLINT(readability-magic-numbers)
-    materials["glass"] = std::make_unique<Material>(glm::vec3(0.6, 0.7, 0.8), 0.0, 0.0, 0.5, 125.0, 0.1, 1.5, 0.8);      // NOLINT(readability-magic-numbers)
+    materials["ground"] = std::make_unique<Lambertian>(glm::vec3(0.5, 0.5, 0.5));      // NOLINT(readability-magic-numbers)
+    materials["big_diffuse"] = std::make_unique<Lambertian>(glm::vec3(0.4, 0.2, 0.1)); // NOLINT(readability-magic-numbers)
+    materials["big_metal"] = std::make_unique<Metal>(glm::vec3(0.7, 0.6, 0.5), 0.0);   // NOLINT(readability-magic-numbers)
+    materials["glass"] = std::make_unique<Dielectric>(1.5);                            // NOLINT(readability-magic-numbers)
 
     geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(0, -1000, 0), 1000, materials["ground"].get())); // NOLINT(readability-magic-numbers)
     geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(0, 1, 0), 1, materials["glass"].get()));         // NOLINT(readability-magic-numbers)
     geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(-4, 1, 0), 1, materials["big_diffuse"].get()));  // NOLINT(readability-magic-numbers)
     geometry_objects.push_back(std::make_unique<Sphere>(glm::vec3(4, 1, 0), 1, materials["big_metal"].get()));     // NOLINT(readability-magic-numbers)
 
-    for (auto a = -11; a < 11; a++) {     // NOLINT(readability-magic-numbers)
-        for (auto b = -11; b < 11; b++) { // NOLINT(readability-magic-numbers)
+    for (auto a = -11; a < 11; ++a) {     // NOLINT(readability-magic-numbers)
+        for (auto b = -11; b < 11; ++b) { // NOLINT(readability-magic-numbers)
             const auto choose_mat = random_float();
             const auto center = glm::vec3(a + 0.9 * random_float(), 0.2, b + 0.9 * random_float()); // NOLINT(readability-magic-numbers)
             const auto s = Sphere(center, 0.2, nullptr);                                            // NOLINT(readability-magic-numbers)
@@ -269,13 +214,14 @@ void Raytracer::create_complex_scene(std::uint32_t width, std::uint32_t height) 
                 if (choose_mat < 0.8) { // NOLINT(readability-magic-numbers)
                     // diffuse
                     const auto random_color = glm::vec3(random_float(), random_float(), random_float());
-                    materials[std::to_string(a) + " " + std::to_string(b)] = std::make_unique<Material>(random_color, 0.1, 0.4, 0.0, 10.0, 0.0, 1.0, 0.0); // NOLINT(readability-magic-numbers)
-                    geometry_objects.push_back(std::make_unique<Sphere>(center, 0.2, materials[std::to_string(a) + " " + std::to_string(b)].get()));       // NOLINT(readability-magic-numbers)
-                } else if (choose_mat < 0.95) {                                                                                                            // NOLINT(readability-magic-numbers)
+                    materials[std::to_string(a) + " " + std::to_string(b)] = std::make_unique<Lambertian>(random_color);                             // NOLINT(readability-magic-numbers)
+                    geometry_objects.push_back(std::make_unique<Sphere>(center, 0.2, materials[std::to_string(a) + " " + std::to_string(b)].get())); // NOLINT(readability-magic-numbers)
+                } else if (choose_mat < 0.95) {                                                                                                      // NOLINT(readability-magic-numbers)
                     // metal
                     const auto r = random_float();
-                    materials[std::to_string(a) + " " + std::to_string(b)] = std::make_unique<Material>(glm::vec3(r, r, r), 0.0, 0.0, 1.0, 100.0, 0.5, 1.0, 0.0); // NOLINT(readability-magic-numbers)
-                    geometry_objects.push_back(std::make_unique<Sphere>(center, 0.2, materials[std::to_string(a) + " " + std::to_string(b)].get()));              // NOLINT(readability-magic-numbers)
+                    const auto fuzz = std::min(random_float(), 0.5F);
+                    materials[std::to_string(a) + " " + std::to_string(b)] = std::make_unique<Metal>(glm::vec3(r, r, r), fuzz);                      // NOLINT(readability-magic-numbers)
+                    geometry_objects.push_back(std::make_unique<Sphere>(center, 0.2, materials[std::to_string(a) + " " + std::to_string(b)].get())); // NOLINT(readability-magic-numbers)
                 } else {
                     // glass
                     geometry_objects.push_back(std::make_unique<Sphere>(center, 0.2, materials["glass"].get())); // NOLINT(readability-magic-numbers)
@@ -283,8 +229,4 @@ void Raytracer::create_complex_scene(std::uint32_t width, std::uint32_t height) 
             }
         }
     }
-    lights = {
-        Light(glm::vec3(-20, 20, 20), 1.5), // NOLINT(readability-magic-numbers)
-        Light(glm::vec3(30, 50, -25), 1.8), // NOLINT(readability-magic-numbers)
-        Light(glm::vec3(30, 20, 30), 1.7)}; // NOLINT(readability-magic-numbers)
 }

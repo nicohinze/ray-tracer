@@ -48,6 +48,18 @@ float random_float() {
     return dist(mt);
 }
 
+glm::vec3 random_in_unit_sphere() {
+    static const thread_local auto SEED = 19640;
+    static thread_local auto mt = std::mt19937(SEED); // NOLINT(cert-msc32-c,cert-msc51-cpp)
+    static thread_local auto dist = std::uniform_real_distribution<float>(-1.0, 1.0);
+    while (true) {
+        auto p = glm::vec3(dist(mt), dist(mt), dist(mt));
+        if (glm::length(p) <= 1) {
+            return p;
+        }
+    }
+}
+
 glm::vec3 random_in_unit_disk() {
     static const thread_local auto SEED = 19640;
     static thread_local auto mt = std::mt19937(SEED); // NOLINT(cert-msc32-c,cert-msc51-cpp)
