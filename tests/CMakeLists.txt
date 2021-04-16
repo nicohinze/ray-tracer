@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(
-    TEST_FILES
-    camera_unit_test.cpp
-    ray_unit_test.cpp
-    sphere_unit_test.cpp
-)
+set(TEST_FILES camera_unit_test.cpp ray_unit_test.cpp sphere_unit_test.cpp)
 
 foreach(FILE ${TEST_FILES})
     get_filename_component(FILE_BASENAME ${FILE} NAME_WE)

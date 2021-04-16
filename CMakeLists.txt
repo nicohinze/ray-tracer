@@ -33,13 +33,7 @@ elseif(RAY_TRACER_ENABLE_SANITIZER STREQUAL "undefined")
     set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -g -fsanitize=undefined")
 endif()
 
-set(
-    COMPILE_FLAGS
-    -Wall
-    -Werror
-    -Wextra
-    -Wpedantic
-)
+set(COMPILE_FLAGS -Wall -Werror -Wextra -Wpedantic)
 
 if(RAY_TRACER_BUILD_TESTS AND RAY_TRACER_BUILD_COVERAGE)
     message(STATUS "Building with coverage information")
@@ -50,8 +44,10 @@ if(RAY_TRACER_BUILD_TESTS AND RAY_TRACER_BUILD_COVERAGE)
         coverage_report
         COMMENT "Generating coverage report"
         COMMAND lcov --capture --directory . --output-file coverage.info --rc lcov_branch_coverage=1
-        COMMAND lcov --extract coverage.info "*/${CMAKE_PROJECT_NAME}/src/*" --output-file coverage.info.filtered --rc lcov_branch_coverage=1
-        COMMAND genhtml --title "${CMAKE_PROJECT_NAME}" --legend --demangle-cpp --output-directory coverage_report --show-details --branch-coverage coverage.info.filtered
+        COMMAND lcov --extract coverage.info "*/${CMAKE_PROJECT_NAME}/src/*" --output-file coverage.info.filtered --rc
+                lcov_branch_coverage=1
+        COMMAND genhtml --title "${CMAKE_PROJECT_NAME}" --legend --demangle-cpp --output-directory coverage_report
+                --show-details --branch-coverage coverage.info.filtered
     )
 endif()
 

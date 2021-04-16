@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 set(TARGET ray-tracer)
-set(
-    SOURCE_FILES
+set(SOURCE_FILES
     camera.cpp
     dielectric.cpp
     geometryobject.cpp
