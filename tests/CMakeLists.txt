@@ -2,14 +2,14 @@ cmake_minimum_required(VERSION 3.12)
 
 set(
     TEST_FILES
-    camera_utest.cpp
-    ray_utest.cpp
-    sphere_utest.cpp
+    camera_unit_test.cpp
+    ray_unit_test.cpp
+    sphere_unit_test.cpp
 )
 
 foreach(FILE ${TEST_FILES})
     get_filename_component(FILE_BASENAME ${FILE} NAME_WE)
-    string(REGEX REPLACE "^(.+)_utest" "test-\\1" TEST_CASE ${FILE_BASENAME})
+    string(REGEX REPLACE "^(.+)_unit_test" "test-\\1" TEST_CASE ${FILE_BASENAME})
     add_executable(${TEST_CASE} ${FILE})
     target_compile_features(${TEST_CASE} PRIVATE cxx_std_17)
     set_target_properties(${TEST_CASE} PROPERTIES CXX_EXTENSIONS OFF)
