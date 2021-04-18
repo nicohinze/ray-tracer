@@ -4,7 +4,7 @@ set(TARGET ray-tracer)
 set(SOURCE_FILES
     camera.cpp
     dielectric.cpp
-    geometryobject.cpp
+    geometry_object.cpp
     intersection.cpp
     lambertian.cpp
     light.cpp

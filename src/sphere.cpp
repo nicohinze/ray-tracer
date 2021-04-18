@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 
-#include "geometryobject.hpp"
+#include "geometry_object.hpp"
 #include "intersection.hpp"
 #include "material.hpp"
 #include "ray.hpp"

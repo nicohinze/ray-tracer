@@ -8,7 +8,7 @@
 #include <glm/glm.hpp>
 
 #include "dielectric.hpp"
-#include "geometryobject.hpp"
+#include "geometry_object.hpp"
 #include "lambertian.hpp"
 #include "light.hpp"
 #include "metal.hpp"
