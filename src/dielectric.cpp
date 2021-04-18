@@ -16,10 +16,10 @@ std::pair<glm::vec3, Ray> Dielectric::scatter(const Ray& ray, const glm::vec3& p
         const auto cosine = -glm::dot(n, ray.get_direction());
         if (random_float() < schlick_approx(cosine < 0 ? -cosine : cosine)) {
             const auto k = glm::dot(ray.get_direction(), n) < 0 ? 1.0F : -1.0F;
-            return Ray(pos + k * OFFSET * n, ray.reflect(n));
+            return Ray(pos + k * OFFSET * n, ray.reflect(n), ray.get_time());
         }
         const auto k = glm::dot(ray.get_direction(), n) > 0 ? 1.0F : -1.0F;
-        return Ray(pos + k * OFFSET * n, ray.refract(n, refractive_index));
+        return Ray(pos + k * OFFSET * n, ray.refract(n, refractive_index), ray.get_time());
     }();
     return std::make_pair(glm::vec3(1, 1, 1), scattered);
 }

@@ -48,6 +48,10 @@ float random_float() {
     return dist(mt);
 }
 
+float random_float(float min, float max) {
+    return min + (max - min) * random_float();
+}
+
 glm::vec3 random_in_unit_sphere() {
     static const thread_local auto SEED = 19640;
     static thread_local auto mt = std::mt19937(SEED); // NOLINT(cert-msc32-c,cert-msc51-cpp)

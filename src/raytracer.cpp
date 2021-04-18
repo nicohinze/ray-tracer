@@ -12,6 +12,7 @@
 #include "lambertian.hpp"
 #include "light.hpp"
 #include "metal.hpp"
+#include "moving_sphere.hpp"
 #include "ray.hpp"
 #include "raytracer.hpp"
 #include "sphere.hpp"
@@ -186,7 +187,9 @@ void Raytracer::create_complex_scene(std::uint32_t width, std::uint32_t height) 
         vfov,
         aspect_ratio,
         aperture,
-        focus_dist);
+        focus_dist,
+        0.0,
+        1.0);
 
     materials["ground"] = std::make_unique<Lambertian>(glm::vec3(0.5, 0.5, 0.5));      // NOLINT(readability-magic-numbers)
     materials["big_diffuse"] = std::make_unique<Lambertian>(glm::vec3(0.4, 0.2, 0.1)); // NOLINT(readability-magic-numbers)
@@ -203,29 +206,21 @@ void Raytracer::create_complex_scene(std::uint32_t width, std::uint32_t height) 
             const auto choose_mat = random_float();
             const auto center = glm::vec3(a + 0.9 * random_float(), 0.2, b + 0.9 * random_float()); // NOLINT(readability-magic-numbers)
             const auto s = Sphere(center, 0.2, nullptr);                                            // NOLINT(readability-magic-numbers)
-            bool intersect = false;
-            for (const auto& object : geometry_objects) {
-                if (s.intersect(*dynamic_cast<Sphere*>(object.get()))) {
-                    intersect = true;
-                    break;
-                }
-            }
-            if (!intersect) {
-                if (choose_mat < 0.8) { // NOLINT(readability-magic-numbers)
-                    // diffuse
-                    const auto random_color = glm::vec3(random_float(), random_float(), random_float());
-                    materials[std::to_string(a) + " " + std::to_string(b)] = std::make_unique<Lambertian>(random_color);                             // NOLINT(readability-magic-numbers)
-                    geometry_objects.push_back(std::make_unique<Sphere>(center, 0.2, materials[std::to_string(a) + " " + std::to_string(b)].get())); // NOLINT(readability-magic-numbers)
-                } else if (choose_mat < 0.95) {                                                                                                      // NOLINT(readability-magic-numbers)
-                    // metal
-                    const auto r = random_float();
-                    const auto fuzz = std::min(random_float(), 0.5F);
-                    materials[std::to_string(a) + " " + std::to_string(b)] = std::make_unique<Metal>(glm::vec3(r, r, r), fuzz);                      // NOLINT(readability-magic-numbers)
-                    geometry_objects.push_back(std::make_unique<Sphere>(center, 0.2, materials[std::to_string(a) + " " + std::to_string(b)].get())); // NOLINT(readability-magic-numbers)
-                } else {
-                    // glass
-                    geometry_objects.push_back(std::make_unique<Sphere>(center, 0.2, materials["glass"].get())); // NOLINT(readability-magic-numbers)
-                }
+            if (choose_mat < 0.8) {                                                                 // NOLINT(readability-magic-numbers)
+                // diffuse
+                const auto random_color = glm::vec3(random_float(), random_float(), random_float()) * glm::vec3(random_float(), random_float(), random_float());
+                const auto center2 = center + glm::vec3(0, random_float(0.0, 0.5), 0);
+                materials[std::to_string(a) + " " + std::to_string(b)] = std::make_unique<Lambertian>(random_color);                                                      // NOLINT(readability-magic-numbers)
+                geometry_objects.push_back(std::make_unique<MovingSphere>(center, center2, 0.2, 0.0, 1.0, materials[std::to_string(a) + " " + std::to_string(b)].get())); // NOLINT(readability-magic-numbers)
+            } else if (choose_mat < 0.95) {                                                                                                                               // NOLINT(readability-magic-numbers)
+                // metal
+                const auto r = random_float();
+                const auto fuzz = random_float(0.0, 0.5);
+                materials[std::to_string(a) + " " + std::to_string(b)] = std::make_unique<Metal>(glm::vec3(r, r, r), fuzz);                      // NOLINT(readability-magic-numbers)
+                geometry_objects.push_back(std::make_unique<Sphere>(center, 0.2, materials[std::to_string(a) + " " + std::to_string(b)].get())); // NOLINT(readability-magic-numbers)
+            } else {
+                // glass
+                geometry_objects.push_back(std::make_unique<Sphere>(center, 0.2, materials["glass"].get())); // NOLINT(readability-magic-numbers)
             }
         }
     }

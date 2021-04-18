@@ -16,8 +16,10 @@ Camera::Camera() // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-i
     lower_left = glm::vec3(-viewport_width / 2.0F, -viewport_height / 2.0F, -1);
 }
 
-Camera::Camera(const glm::vec3& o, const glm::vec3& lookat, const glm::vec3& vup, float vfov, float aspect_ratio, float aperture, float focus_dist) // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
-    : origin(o) {
+Camera::Camera(const glm::vec3& o, const glm::vec3& lookat, const glm::vec3& vup, float vfov, float aspect_ratio, float aperture, float focus_dist, float t1, float t2) // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
+    : origin(o)
+    , time1(t1)
+    , time2(t2) {
     auto theta = static_cast<float>(M_PI) / 180.0F * vfov; // NOLINT(readability-magic-numbers)
     auto h = std::tan(theta / 2.0F);
     auto viewport_height = 2.0F * h;
@@ -34,5 +36,5 @@ Camera::Camera(const glm::vec3& o, const glm::vec3& lookat, const glm::vec3& vup
 Ray Camera::get_ray(float x, float y) const {
     auto rng = lens_radius * random_in_unit_disk();
     auto offset = u * rng.x + v * rng.y;
-    return Ray(origin + offset, glm::normalize(lower_left + x * horizontal + y * vertical - origin - offset));
+    return Ray(origin + offset, glm::normalize(lower_left + x * horizontal + y * vertical - origin - offset), random_float(time1, time2));
 }

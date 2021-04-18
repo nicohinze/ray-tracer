@@ -45,14 +45,3 @@ TEST_CASE("Ray-sphere intersection", "[sphere]") {
     intersec = sphere.intersect(ray);
     REQUIRE(!intersec.has_value());
 }
-
-TEST_CASE("Sphere-sphere intersection", "[sphere]") {
-    auto sphere1 = Sphere(glm::vec3(0, 1, 0), 1, nullptr);
-    auto sphere2 = Sphere(glm::vec3(0, 0, 0), 1, nullptr);
-    auto sphere3 = Sphere(glm::vec3(0, -1, 0), 1, nullptr);
-
-    REQUIRE(sphere1.intersect(sphere1));
-    REQUIRE(sphere1.intersect(sphere2));
-    REQUIRE(!sphere1.intersect(sphere3));
-    REQUIRE(sphere2.intersect(sphere3));
-}

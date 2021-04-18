@@ -9,6 +9,7 @@ set(SOURCE_FILES
     lambertian.cpp
     light.cpp
     metal.cpp
+    moving_sphere.cpp
     ray.cpp
     raytracer.cpp
     sphere.cpp

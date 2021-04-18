@@ -1,7 +1,7 @@
 #include "ray.hpp"
 
-Ray::Ray(const glm::vec3& o, const glm::vec3& d)
-    : origin(o), direction(d) {}
+Ray::Ray(const glm::vec3& o, const glm::vec3& d, float t)
+    : origin(o), direction(d), time(t) {}
 
 glm::vec3 Ray::get_origin() const {
     return origin;
@@ -9,6 +9,10 @@ glm::vec3 Ray::get_origin() const {
 
 glm::vec3 Ray::get_direction() const {
     return direction;
+}
+
+float Ray::get_time() const {
+    return time;
 }
 
 glm::vec3 Ray::reflect(const glm::vec3& n) const {
