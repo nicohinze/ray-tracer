@@ -31,3 +31,7 @@ std::optional<Intersection> Sphere::intersect(const Ray& ray) const {
     }
     return std::nullopt;
 }
+
+std::optional<AABB> Sphere::bounding_box(float /*t0*/, float /*t1*/) const {
+    return AABB(center - glm::vec3(radius, radius, radius), center + glm::vec3(radius, radius, radius));
+}

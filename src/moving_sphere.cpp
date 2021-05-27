@@ -27,3 +27,9 @@ std::optional<Intersection> MovingSphere::intersect(const Ray& ray) const {
     }
     return std::nullopt;
 }
+
+std::optional<AABB> MovingSphere::bounding_box(float t0, float t1) const {
+    const auto aabb0 = AABB(get_center(t0) - glm::vec3(radius, radius, radius), get_center(t0) + glm::vec3(radius, radius, radius));
+    const auto aabb1 = AABB(get_center(t1) - glm::vec3(radius, radius, radius), get_center(t1) + glm::vec3(radius, radius, radius));
+    return surrounding_box(aabb0, aabb1);
+}

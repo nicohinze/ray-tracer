@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 set(TARGET ray-tracer)
 set(SOURCE_FILES
+    aabb.cpp
     camera.cpp
     dielectric.cpp
     geometry_object.cpp
