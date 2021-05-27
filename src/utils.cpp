@@ -41,6 +41,10 @@ void show_render_progress(std::uint32_t percent) {
     show_progress(percent, TOTAL - PREFIX_STRING.length());
 }
 
+int random_int(int min, int max) {
+    return static_cast<int>(random_float(min, max + 1));
+}
+
 float random_float() {
     static const thread_local auto SEED = 19640;
     static thread_local auto mt = std::mt19937(SEED); // NOLINT(cert-msc32-c,cert-msc51-cpp)
