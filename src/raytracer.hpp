@@ -12,6 +12,7 @@
 
 #include <glm/glm.hpp>
 
+#include "bvh_node.hpp"
 #include "camera.hpp"
 #include "light.hpp"
 #include "material.hpp"
@@ -28,15 +29,13 @@ class Raytracer {
     std::vector<glm::vec3> framebuffer;
     Camera camera;
     std::map<std::string, std::unique_ptr<Material>> materials;
-    std::vector<std::unique_ptr<GeometryObject>> geometry_objects;
+    std::unique_ptr<BVH_Node> bvh_root;
     std::vector<Light> lights;
     std::mutex mutex;
     std::condition_variable cv;
-    std::atomic<std::uint32_t> finished_threads;
-    std::atomic<std::uint32_t> finished_lines;
-    std::atomic<std::uint32_t> rays_cast;
-    std::atomic<std::uint32_t> intersection_tests;
-
+    std::atomic<std::uint32_t> finished_threads = 0;
+    std::atomic<std::uint32_t> finished_lines = 0;
+    std::atomic<std::uint64_t> rays_cast = 0;
     bool show_progress;
 
     void render_lines(std::uint32_t offset, std::uint32_t stride);
@@ -50,7 +49,7 @@ class Raytracer {
     Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t recursion_depth, std::uint32_t ray_per_pixel);
     void trace_rays();
     void write_framebuffer(const std::string& filename) const;
-    std::uint32_t get_rays_cast() const;
-    std::uint32_t get_intersection_tests() const;
+    std::uint64_t get_rays_cast() const;
+    std::uint64_t get_intersection_tests() const;
     void set_show_progress(bool show);
 };

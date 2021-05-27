@@ -1,13 +1,9 @@
 #pragma once
 
-#include <memory>
-#include <optional>
-
-#include "intersection.hpp"
+#include "hittable.hpp"
 #include "material.hpp"
-#include "ray.hpp"
 
-class GeometryObject {
+class GeometryObject : public Hittable {
   protected:
     const Material* material;
 
@@ -18,5 +14,4 @@ class GeometryObject {
     GeometryObject& operator=(const GeometryObject& other) = default;
     GeometryObject& operator=(GeometryObject&& other) = default;
     virtual ~GeometryObject() = default;
-    virtual std::optional<Intersection> intersect(const Ray& ray) const = 0;
 };
