@@ -42,7 +42,7 @@ void show_render_progress(std::uint32_t percent) {
 }
 
 int random_int(int min, int max) {
-    return static_cast<int>(random_float(min, max + 1));
+    return static_cast<int>(random_float(static_cast<float>(min), static_cast<float>(max + 1)));
 }
 
 float random_float() {

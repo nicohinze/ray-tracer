@@ -1,5 +1,8 @@
 #include "aabb.hpp"
 
+AABB::AABB()
+    : min(glm::vec3(0, 0, 0)), max(glm::vec3(0, 0, 0)) {
+}
 AABB::AABB(const glm::vec3& min, const glm::vec3& max)
     : min(min), max(max) {}
 

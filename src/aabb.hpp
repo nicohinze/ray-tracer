@@ -10,7 +10,7 @@ class AABB {
     glm::vec3 max;
 
   public:
-    AABB() = default;
+    AABB();
     AABB(const glm::vec3& min, const glm::vec3& max);
     bool intersect(const Ray& ray) const;
     glm::vec3 get_min() const;
