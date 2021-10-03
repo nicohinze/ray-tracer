@@ -5,6 +5,7 @@ set(SOURCE_FILES
     aabb.cpp
     bvh_node.cpp
     camera.cpp
+    checker_texture.cpp
     dielectric.cpp
     geometry_object.cpp
     intersection.cpp
@@ -14,6 +15,7 @@ set(SOURCE_FILES
     moving_sphere.cpp
     ray.cpp
     raytracer.cpp
+    solid_color.cpp
     sphere.cpp
     utils.cpp
 )

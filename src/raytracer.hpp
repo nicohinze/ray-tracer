@@ -44,6 +44,7 @@ class Raytracer {
     glm::vec3 calculate_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth);
     void create_simple_scene(std::uint32_t width, std::uint32_t height);
     void create_complex_scene(std::uint32_t width, std::uint32_t height);
+    void create_two_spheres_scene(std::uint32_t width, std::uint32_t height);
 
   public:
     Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t recursion_depth, std::uint32_t ray_per_pixel);

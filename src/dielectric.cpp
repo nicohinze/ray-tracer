@@ -11,7 +11,7 @@ float Dielectric::schlick_approx(float cosine) const {
     return r0 + (1 - r0) * std::pow(1 - cosine, 5.0F); // NOLINT(readability-magic-numbers)
 }
 
-std::pair<glm::vec3, Ray> Dielectric::scatter(const Ray& ray, const glm::vec3& pos, const glm::vec3& n) const {
+std::pair<glm::vec3, Ray> Dielectric::scatter(const Ray& ray, const glm::vec3& pos, const glm::vec3& n, float /*u*/, float /*v*/) const {
     const auto scattered = [this, &ray, &pos, &n] {
         const auto cosine = -glm::dot(n, ray.get_direction());
         if (random_float() < schlick_approx(cosine < 0 ? -cosine : cosine)) {

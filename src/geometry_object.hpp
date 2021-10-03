@@ -14,4 +14,5 @@ class GeometryObject : public Hittable {
     GeometryObject& operator=(const GeometryObject& other) = default;
     GeometryObject& operator=(GeometryObject&& other) = default;
     virtual ~GeometryObject() = default;
+    virtual std::pair<float, float> get_uv(const glm::vec3& p) const = 0;
 };

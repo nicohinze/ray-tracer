@@ -11,18 +11,24 @@ std::optional<Intersection> MovingSphere::intersect(const Ray& ray) const {
     const auto origin = ray.get_origin();
     const auto direction = ray.get_direction();
     const auto center = get_center(ray.get_time());
-    const auto v = center - origin;
-    const auto u1 = glm::dot(direction, v);
-    const auto d_2 = glm::length(v) * glm::length(v) - u1 * u1;
+    const auto r = center - origin;
+    const auto s1 = glm::dot(direction, r);
+    const auto d_2 = glm::length(r) * glm::length(r) - s1 * s1;
     if (radius * radius >= d_2) {
         const auto u2 = glm::sqrt(radius * radius - d_2);
-        const auto t0 = u1 - u2;
-        const auto t1 = u1 + u2;
+        const auto t0 = s1 - u2;
+        const auto t1 = s1 + u2;
         if (t0 >= 0) {
-            return Intersection(t0, origin + direction * t0, glm::normalize(origin + direction * t0 - center), material);
+            const auto hit_point = origin + direction * t0;
+            const auto outward_normal = glm::normalize(hit_point - center);
+            const auto [u, v] = get_uv(outward_normal);
+            return Intersection(t0, hit_point, outward_normal, material, u, v);
         }
         if (t1 >= 0) {
-            return Intersection(t1, origin + direction * t1, glm::normalize(origin + direction * t1 - center), material);
+            const auto hit_point = origin + direction * t1;
+            const auto outward_normal = glm::normalize(hit_point - center);
+            const auto [u, v] = get_uv(outward_normal);
+            return Intersection(t1, hit_point, outward_normal, material, u, v);
         }
     }
     return std::nullopt;
@@ -32,4 +38,13 @@ std::optional<AABB> MovingSphere::bounding_box(float t0, float t1) const {
     const auto aabb0 = AABB(get_center(t0) - glm::vec3(radius, radius, radius), get_center(t0) + glm::vec3(radius, radius, radius));
     const auto aabb1 = AABB(get_center(t1) - glm::vec3(radius, radius, radius), get_center(t1) + glm::vec3(radius, radius, radius));
     return surrounding_box(aabb0, aabb1);
+}
+
+std::pair<float, float> MovingSphere::get_uv(const glm::vec3& p) const {
+    //     <1 0 0> yields <0.50 0.50>       <-1  0  0> yields <0.00 0.50>
+    //     <0 1 0> yields <0.50 1.00>       < 0 -1  0> yields <0.50 0.00>
+    //     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
+    const auto phi = std::atan2(-p.z, p.x) + static_cast<float>(M_PI);
+    const auto theta = std::acos(-p.y);
+    return std::make_pair(phi / (2 * M_PI), theta / M_PI);
 }

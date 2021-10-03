@@ -9,5 +9,5 @@ class Metal : public Material {
 
   public:
     Metal(const glm::vec3& a, float f);
-    std::pair<glm::vec3, Ray> scatter(const Ray& ray, const glm::vec3& pos, const glm::vec3& n) const override;
+    std::pair<glm::vec3, Ray> scatter(const Ray& ray, const glm::vec3& pos, const glm::vec3& n, float u, float v) const override;
 };

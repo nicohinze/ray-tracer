@@ -1,0 +1,12 @@
+#pragma once
+
+#include "texture.hpp"
+
+class SolidColor : public Texture {
+  private:
+    glm::vec3 color;
+
+  public:
+    SolidColor(const glm::vec3& c);
+    glm::vec3 value(float u, float v, const glm::vec3& p) const override;
+};

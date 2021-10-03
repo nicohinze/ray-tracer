@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 
 #include "bvh_node.hpp"
+#include "checker_texture.hpp"
 #include "dielectric.hpp"
 #include "geometry_object.hpp"
 #include "lambertian.hpp"
@@ -28,6 +29,7 @@ Raytracer::Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t re
     framebuffer.reserve(width * height);
     // create_simple_scene(width, height);
     create_complex_scene(width, height);
+    // create_two_spheres_scene(width, height);
 }
 
 void Raytracer::trace_rays() {
@@ -126,7 +128,7 @@ std::optional<Intersection> Raytracer::get_closest_intersection(const Ray& ray) 
 
 glm::vec3 Raytracer::calculate_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth) {
     if (intersect.get_material() != nullptr) {
-        const auto [color, scattered] = intersect.get_material()->scatter(ray, intersect.get_position(), intersect.get_normal());
+        const auto [color, scattered] = intersect.get_material()->scatter(ray, intersect.get_position(), intersect.get_normal(), intersect.get_u(), intersect.get_v());
         return color * cast_ray(scattered, recursion_depth + 1);
     }
     return intersect.get_normal();
@@ -215,5 +217,32 @@ void Raytracer::create_complex_scene(std::uint32_t width, std::uint32_t height) 
             }
         }
     }
+    bvh_root = std::make_unique<BVH_Node>(geometry_objects, 0.0, 1.0);
+}
+
+void Raytracer::create_two_spheres_scene(std::uint32_t width, std::uint32_t height) {
+    const auto origin = glm::vec3(13, 2, 3); // NOLINT(readability-magic-numbers)
+    const auto lookat = glm::vec3(0, 0, 0);
+    const auto vup = glm::vec3(0, 1, 0);
+    const auto vfov = 20.0F; // NOLINT(readability-magic-numbers)
+    const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+    const auto aperture = 0.1F;    // NOLINT(readability-magic-numbers)
+    const auto focus_dist = 10.0F; // NOLINT(readability-magic-numbers)
+    camera = Camera(
+        origin,
+        lookat,
+        vup,
+        vfov,
+        aspect_ratio,
+        aperture,
+        focus_dist,
+        0.0,
+        1.0);
+
+    auto checker = std::make_unique<CheckerTexture>(glm::vec3(0.2, 0.3, 0.1), glm::vec3(0.9, 0.9, 0.9)); // NOLINT(readability-magic-numbers)
+    materials["checker"] = std::make_unique<Lambertian>(std::move(checker));
+    auto geometry_objects = std::vector<std::shared_ptr<Hittable>>();
+    geometry_objects.push_back(std::make_shared<Sphere>(glm::vec3(0, -10, 0), 10, materials["checker"].get())); // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_shared<Sphere>(glm::vec3(0, 10, 0), 10, materials["checker"].get()));  // NOLINT(readability-magic-numbers)
     bvh_root = std::make_unique<BVH_Node>(geometry_objects, 0.0, 1.0);
 }

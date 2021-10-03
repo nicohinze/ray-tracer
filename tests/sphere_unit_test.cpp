@@ -18,27 +18,33 @@ void require_vec_equal(const glm::vec3& vec1, const glm::vec3& vec2) {
 TEST_CASE("Ray-sphere intersection", "[sphere]") {
     auto sphere = Sphere(glm::vec3(0, 0, 0), 1, nullptr);
     auto ray = Ray(glm::vec3(0, 1, 1), glm::vec3(0, 0, -1));
-    auto expected = Intersection(1.0, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), nullptr);
+    auto expected = Intersection(1.0, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), nullptr, 0.25, 1); // NOLINT(readability-magic-numbers)
     auto intersec = sphere.intersect(ray);
-    REQUIRE(intersec.value().get_distance() == Approx(expected.get_distance()).margin(MARGIN));
-    require_vec_equal(intersec.value().get_position(), expected.get_position());
-    require_vec_equal(intersec.value().get_normal(), expected.get_normal());
+    REQUIRE(intersec->get_distance() == Approx(expected.get_distance()).margin(MARGIN));
+    require_vec_equal(intersec->get_position(), expected.get_position());
+    require_vec_equal(intersec->get_normal(), expected.get_normal());
+    REQUIRE(intersec->get_u() == expected.get_u());
+    REQUIRE(intersec->get_v() == expected.get_v());
 
     sphere = Sphere(glm::vec3(0, 1, 0), 1, nullptr);
     ray = Ray(glm::vec3(0, -1, 0), glm::vec3(0, 1, 0));
-    expected = Intersection(1.0, glm::vec3(0, 0, 0), glm::vec3(0, -1, 0), nullptr);
+    expected = Intersection(1.0, glm::vec3(0, 0, 0), glm::vec3(0, -1, 0), nullptr, 0.5, 0);
     intersec = sphere.intersect(ray);
-    REQUIRE(intersec.value().get_distance() == Approx(expected.get_distance()).margin(MARGIN));
-    require_vec_equal(intersec.value().get_position(), expected.get_position());
-    require_vec_equal(intersec.value().get_normal(), expected.get_normal());
+    REQUIRE(intersec->get_distance() == Approx(expected.get_distance()).margin(MARGIN));
+    require_vec_equal(intersec->get_position(), expected.get_position());
+    require_vec_equal(intersec->get_normal(), expected.get_normal());
+    REQUIRE(intersec->get_u() == expected.get_u());
+    REQUIRE(intersec->get_v() == expected.get_v());
 
     sphere = Sphere(glm::vec3(0, 0, 0), 1, nullptr);
     ray = Ray(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    expected = Intersection(1.0, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), nullptr);
+    expected = Intersection(1.0, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), nullptr, 0.5, 1);
     intersec = sphere.intersect(ray);
-    REQUIRE(intersec.value().get_distance() == Approx(expected.get_distance()).margin(MARGIN));
-    require_vec_equal(intersec.value().get_position(), expected.get_position());
-    require_vec_equal(intersec.value().get_normal(), expected.get_normal());
+    REQUIRE(intersec->get_distance() == Approx(expected.get_distance()).margin(MARGIN));
+    require_vec_equal(intersec->get_position(), expected.get_position());
+    require_vec_equal(intersec->get_normal(), expected.get_normal());
+    REQUIRE(intersec->get_u() == expected.get_u());
+    REQUIRE(intersec->get_v() == expected.get_v());
 
     sphere = Sphere(glm::vec3(0, 0, 0), 1, nullptr);
     ray = Ray(glm::vec3(0, -2, 0), glm::vec3(1, 0, 0));

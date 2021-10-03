@@ -64,7 +64,7 @@ BVH_Node::BVH_Node(const std::vector<std::shared_ptr<Hittable>>& objects, std::s
 
 std::optional<Intersection> BVH_Node::intersect(const Ray& ray) const {
     intersection_tests++;
-    if (const auto intersect = aabb.intersect(ray)) {
+    if (aabb.intersect(ray)) {
         const auto left_intersect = left->intersect(ray);
         const auto right_intersect = right->intersect(ray);
         intersection_tests += static_cast<int>(dynamic_cast<GeometryObject*>(left.get()) != nullptr);

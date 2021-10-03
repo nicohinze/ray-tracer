@@ -19,4 +19,5 @@ class Sphere : public GeometryObject {
     Sphere(const glm::vec3& c, float r, const Material* m);
     std::optional<Intersection> intersect(const Ray& ray) const override;
     std::optional<AABB> bounding_box(float t0, float t1) const override;
+    std::pair<float, float> get_uv(const glm::vec3& p) const override;
 };
