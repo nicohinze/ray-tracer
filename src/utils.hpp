@@ -4,8 +4,8 @@
 
 #include <glm/glm.hpp>
 
-void show_progress(std::uint32_t percent, std::size_t total_length);
-void show_render_progress(std::uint32_t percent);
+void show_progress(std::size_t percent, std::size_t total_length);
+void show_render_progress(std::size_t percent);
 int random_int(int min, int max);
 float random_float();
 float random_float(float min, float max);

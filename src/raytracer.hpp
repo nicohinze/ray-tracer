@@ -21,10 +21,10 @@
 
 class Raytracer {
   private:
-    const std::uint32_t WIDTH;
-    const std::uint32_t HEIGHT;
-    const std::uint32_t MAX_RECURSION_DEPTH;
-    const std::uint32_t RAYS_PER_PIXEL;
+    const std::size_t WIDTH;
+    const std::size_t HEIGHT;
+    const std::size_t MAX_RECURSION_DEPTH;
+    const std::size_t RAYS_PER_PIXEL;
 
     std::vector<glm::vec3> framebuffer;
     Camera camera;
@@ -33,24 +33,24 @@ class Raytracer {
     std::vector<Light> lights;
     std::mutex mutex;
     std::condition_variable cv;
-    std::atomic<std::uint32_t> finished_threads = 0;
-    std::atomic<std::uint32_t> finished_lines = 0;
-    std::atomic<std::uint64_t> rays_cast = 0;
+    std::atomic<std::size_t> finished_threads = 0;
+    std::atomic<std::size_t> finished_lines = 0;
+    std::atomic<std::size_t> rays_cast = 0;
     bool show_progress;
 
-    void render_lines(std::uint32_t offset, std::uint32_t stride);
-    glm::vec3 cast_ray(const Ray& ray, std::uint32_t recursion_depth);
+    void render_lines(std::size_t offset, std::size_t stride);
+    glm::vec3 cast_ray(const Ray& ray, std::size_t recursion_depth);
     std::optional<Intersection> get_closest_intersection(const Ray& ray);
-    glm::vec3 calculate_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth);
-    void create_simple_scene(std::uint32_t width, std::uint32_t height);
-    void create_complex_scene(std::uint32_t width, std::uint32_t height);
-    void create_two_spheres_scene(std::uint32_t width, std::uint32_t height);
+    glm::vec3 calculate_lighting(const Ray& ray, const Intersection& intersect, std::size_t recursion_depth);
+    void create_simple_scene(std::size_t width, std::size_t height);
+    void create_complex_scene(std::size_t width, std::size_t height);
+    void create_two_spheres_scene(std::size_t width, std::size_t height);
 
   public:
-    Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t recursion_depth, std::uint32_t ray_per_pixel);
+    Raytracer(std::size_t width, std::size_t height, std::size_t recursion_depth, std::size_t ray_per_pixel);
     void trace_rays();
     void write_framebuffer(const std::string& filename) const;
-    std::uint64_t get_rays_cast() const;
-    std::uint64_t get_intersection_tests() const;
+    std::size_t get_rays_cast() const;
+    std::size_t get_intersection_tests() const;
     void set_show_progress(bool show);
 };

@@ -42,5 +42,5 @@ AABB surrounding_box(const AABB& aabb0, const AABB& aabb1) {
         std::max(aabb0.get_max().x, aabb1.get_max().x),
         std::max(aabb0.get_max().y, aabb1.get_max().y),
         std::max(aabb0.get_max().z, aabb1.get_max().z));
-    return AABB(p0, p1);
+    return {p0, p1};
 }

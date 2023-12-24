@@ -20,7 +20,7 @@
 #include "sphere.hpp"
 #include "utils.hpp"
 
-Raytracer::Raytracer(std::uint32_t width, std::uint32_t height, std::uint32_t recursion_depth, std::uint32_t ray_per_pixel)
+Raytracer::Raytracer(std::size_t width, std::size_t height, std::size_t recursion_depth, std::size_t ray_per_pixel)
     : WIDTH(width)
     , HEIGHT(height)
     , MAX_RECURSION_DEPTH(recursion_depth)
@@ -63,19 +63,19 @@ void Raytracer::write_framebuffer(const std::string& filename) const {
     ofs.open(filename, std::ios_base::out | std::ios_base::trunc);
     ofs << "P6\n"
         << WIDTH << " " << HEIGHT << "\n255\n";
-    for (std::uint32_t i = 0; i < WIDTH * HEIGHT; ++i) {
-        for (std::uint32_t j = 0; j < 3; ++j) {
+    for (std::size_t i = 0; i < WIDTH * HEIGHT; ++i) {
+        for (auto j = 0; j < 3; ++j) {
             ofs << static_cast<unsigned char>(255 * std::max(0.0F, std::min(1.0F, std::sqrt(framebuffer[i][j]))));
         }
     }
     ofs.close();
 }
 
-std::uint64_t Raytracer::get_rays_cast() const {
+std::size_t Raytracer::get_rays_cast() const {
     return rays_cast;
 }
 
-std::uint64_t Raytracer::get_intersection_tests() const {
+std::size_t Raytracer::get_intersection_tests() const {
     return bvh_root->get_intersection_tests();
 }
 
@@ -83,14 +83,14 @@ void Raytracer::set_show_progress(bool show) {
     show_progress = show;
 }
 
-void Raytracer::render_lines(std::uint32_t offset, std::uint32_t stride) {
+void Raytracer::render_lines(std::size_t offset, std::size_t stride) {
     const auto seed = 19640;
     auto mt = std::mt19937(seed); // NOLINT(cert-msc32-c,cert-msc51-cpp)
     auto dist = std::uniform_real_distribution<float>(0.0, 1.0);
-    for (std::uint32_t y = offset; y < HEIGHT; y += stride) {
-        for (std::uint32_t x = 0; x < WIDTH; ++x) {
+    for (auto y = offset; y < HEIGHT; y += stride) {
+        for (auto x = 0u; x < WIDTH; ++x) {
             auto avg_color = glm::vec3(0, 0, 0);
-            for (std::uint32_t _ = 0; _ < RAYS_PER_PIXEL; ++_) {
+            for (auto _ = 0u; _ < RAYS_PER_PIXEL; ++_) {
                 const auto v = (static_cast<float>(HEIGHT) - static_cast<float>(y) + dist(mt)) / static_cast<float>(HEIGHT);
                 const auto u = (static_cast<float>(x) + dist(mt)) / static_cast<float>(WIDTH);
                 const auto ray = camera.get_ray(u, v);
@@ -107,11 +107,11 @@ void Raytracer::render_lines(std::uint32_t offset, std::uint32_t stride) {
     cv.notify_one();
 }
 
-glm::vec3 Raytracer::cast_ray(const Ray& ray, std::uint32_t recursion_depth) {
+glm::vec3 Raytracer::cast_ray(const Ray& ray, std::size_t recursion_depth) {
     static constexpr auto WHITE = glm::vec3(1.0, 1.0, 1.0);
     static constexpr auto LIGHT_BLUE = glm::vec3(0.5, 0.7, 1.0);
     if (recursion_depth > MAX_RECURSION_DEPTH) {
-        return glm::vec3(0, 0, 0);
+        return {0, 0, 0};
     }
     rays_cast++;
     const auto closest_intersect = get_closest_intersection(ray);
@@ -126,7 +126,7 @@ std::optional<Intersection> Raytracer::get_closest_intersection(const Ray& ray) 
     return bvh_root->intersect(ray);
 }
 
-glm::vec3 Raytracer::calculate_lighting(const Ray& ray, const Intersection& intersect, std::uint32_t recursion_depth) {
+glm::vec3 Raytracer::calculate_lighting(const Ray& ray, const Intersection& intersect, std::size_t recursion_depth) {
     if (intersect.get_material() != nullptr) {
         const auto [color, scattered] = intersect.get_material()->scatter(ray, intersect.get_position(), intersect.get_normal(), intersect.get_u(), intersect.get_v());
         return color * cast_ray(scattered, recursion_depth + 1);
@@ -134,7 +134,7 @@ glm::vec3 Raytracer::calculate_lighting(const Ray& ray, const Intersection& inte
     return intersect.get_normal();
 }
 
-void Raytracer::create_simple_scene(std::uint32_t width, std::uint32_t height) {
+void Raytracer::create_simple_scene(std::size_t width, std::size_t height) {
     const auto origin = glm::vec3(0, 0, 0);
     const auto lookto = glm::vec3(0, 0, -1);
     const auto vup = glm::vec3(0, 1, 0);
@@ -164,7 +164,7 @@ void Raytracer::create_simple_scene(std::uint32_t width, std::uint32_t height) {
     bvh_root = std::make_unique<BVH_Node>(geometry_objects, 0.0, 1.0);
 }
 
-void Raytracer::create_complex_scene(std::uint32_t width, std::uint32_t height) {
+void Raytracer::create_complex_scene(std::size_t width, std::size_t height) {
     const auto origin = glm::vec3(13, 2, 3); // NOLINT(readability-magic-numbers)
     const auto lookat = glm::vec3(0, 0, 0);
     const auto vup = glm::vec3(0, 1, 0);
@@ -220,7 +220,7 @@ void Raytracer::create_complex_scene(std::uint32_t width, std::uint32_t height) 
     bvh_root = std::make_unique<BVH_Node>(geometry_objects, 0.0, 1.0);
 }
 
-void Raytracer::create_two_spheres_scene(std::uint32_t width, std::uint32_t height) {
+void Raytracer::create_two_spheres_scene(std::size_t width, std::size_t height) {
     const auto origin = glm::vec3(13, 2, 3); // NOLINT(readability-magic-numbers)
     const auto lookat = glm::vec3(0, 0, 0);
     const auto vup = glm::vec3(0, 1, 0);

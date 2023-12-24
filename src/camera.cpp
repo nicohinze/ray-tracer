@@ -18,6 +18,7 @@ Camera::Camera() // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-i
 
 Camera::Camera(const glm::vec3& o, const glm::vec3& lookat, const glm::vec3& vup, float vfov, float aspect_ratio, float aperture, float focus_dist, float t1, float t2) // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
     : origin(o)
+    , lens_radius(aperture / 2.0F)
     , time1(t1)
     , time2(t2) {
     auto theta = static_cast<float>(M_PI) / 180.0F * vfov; // NOLINT(readability-magic-numbers)
@@ -30,11 +31,10 @@ Camera::Camera(const glm::vec3& o, const glm::vec3& lookat, const glm::vec3& vup
     horizontal = focus_dist * viewport_width * u;
     vertical = focus_dist * viewport_height * v;
     lower_left = origin - horizontal / 2.0F - vertical / 2.0F - focus_dist * w;
-    lens_radius = aperture / 2.0F;
 }
 
 Ray Camera::get_ray(float x, float y) const {
     auto rng = lens_radius * random_in_unit_disk();
     auto offset = u * rng.x + v * rng.y;
-    return Ray(origin + offset, glm::normalize(lower_left + x * horizontal + y * vertical - origin - offset), random_float(time1, time2));
+    return {origin + offset, glm::normalize(lower_left + x * horizontal + y * vertical - origin - offset), random_float(time1, time2)};
 }

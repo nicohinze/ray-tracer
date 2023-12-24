@@ -25,7 +25,7 @@ bool z_axis_compare(const std::shared_ptr<Hittable>& obj1, const std::shared_ptr
     return axis_compare(obj1, obj2, 2);
 }
 
-std::atomic<std::uint64_t> BVH_Node::intersection_tests = 0; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+std::atomic<std::size_t> BVH_Node::intersection_tests = 0; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 BVH_Node::BVH_Node(const std::vector<std::shared_ptr<Hittable>>& objects, float t0, float t1)
     : BVH_Node(objects, 0, objects.size(), t0, t1) {
@@ -48,7 +48,7 @@ BVH_Node::BVH_Node(const std::vector<std::shared_ptr<Hittable>>& objects, std::s
             left = objects[start + 1];
         }
     } else {
-        std::sort(copy.begin() + start, copy.begin() + end, comparator);
+        std::sort(copy.begin() + static_cast<int>(start), copy.begin() + static_cast<int>(end), comparator);
         const auto mid = start + size / 2;
         left = std::make_shared<BVH_Node>(copy, start, mid, t0, t1);
         right = std::make_shared<BVH_Node>(copy, mid, end, t0, t1);
@@ -86,6 +86,6 @@ std::optional<AABB> BVH_Node::bounding_box(float /*t0*/, float /*t1*/) const {
     return aabb;
 }
 
-std::uint64_t BVH_Node::get_intersection_tests() {
+std::size_t BVH_Node::get_intersection_tests() {
     return intersection_tests;
 }

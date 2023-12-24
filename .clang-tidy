@@ -1,11 +1,15 @@
 ---
 Checks: >
   *,
+  -altera-id-dependent-backward-branch,
+  -altera-unroll-loops,
+  -bugprone-easily-swappable-parameters,
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-non-private-member-variables-in-classes,
   -cppcoreguidelines-pro-type-union-access,
   -fuchsia-default-arguments,
   -fuchsia-default-arguments-calls,
+  -hicpp-uppercase-literal-suffix,
   -llvm-header-guard,
   -llvmlibc-callee-namespace,
   -llvmlibc-implementation-in-namespace,
@@ -13,10 +17,12 @@ Checks: >
   -misc-no-recursion,
   -misc-non-private-member-variables-in-classes,
   -modernize-use-nodiscard,
-  -modernize-use-trailing-return-type
+  -modernize-use-trailing-return-type,
+  -readability-identifier-length,
+  -readability-uppercase-literal-suffix
 
 FormatStyle: file
-WarningsAsErrors: '*'
+WarningsAsErrors: "*"
 
 CheckOptions:
   - key: readability-identifier-naming.ClassCase
@@ -54,6 +60,6 @@ CheckOptions:
   - key: readability-identifier-naming.VariableCase
     value: lower_case
   - key: readability-magic-numbers.IgnoredFloatingPointValues
-    value: '1.0;100.0;0.5;2.0;'
+    value: "1.0;100.0;0.5;2.0;"
   - key: readability-magic-numbers.IgnoredIntegerValues
-    value: '1;2;3;4;255;'
+    value: "1;2;3;4;255;"
