@@ -1,5 +1,5 @@
 # Build directories
-/build
+/build*
 
 # Executables
 *.exe
@@ -11,3 +11,4 @@
 
 # Visual Studio Code files
 /.vscode
+/.cache
