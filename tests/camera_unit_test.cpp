@@ -1,15 +1,16 @@
 #define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
 
-#include "catch.hpp"
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include <glm/glm.hpp>
 
 #include "camera.hpp"
 
 void require_vec_equal(const glm::vec3& vec1, const glm::vec3& vec2) {
     static constexpr auto MARGIN = 0.00001;
-    REQUIRE(vec1.x == Approx(vec2.x).margin(MARGIN));
-    REQUIRE(vec1.y == Approx(vec2.y).margin(MARGIN));
-    REQUIRE(vec1.z == Approx(vec2.z).margin(MARGIN));
+    REQUIRE_THAT(vec1.x, Catch::Matchers::WithinAbs(vec2.x, MARGIN));
+    REQUIRE_THAT(vec1.y, Catch::Matchers::WithinAbs(vec2.y, MARGIN));
+    REQUIRE_THAT(vec1.z, Catch::Matchers::WithinAbs(vec2.z, MARGIN));
 }
 
 TEST_CASE("Default camera settings", "[camera]") {
