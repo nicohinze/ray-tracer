@@ -1,8 +1,14 @@
+#include <asm-generic/ioctls.h>
+#include <cstddef>
 #include <iomanip>
 #include <iostream>
 #include <random>
+#include <string>
 #include <sys/ioctl.h>
 #include <unistd.h>
+
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
 
 #include "utils.hpp"
 

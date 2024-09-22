@@ -1,6 +1,10 @@
 #include <cmath>
+#include <numbers>
+
+#include <glm/geometric.hpp>
 
 #include "camera.hpp"
+#include "ray.hpp"
 #include "utils.hpp"
 
 Camera::Camera() // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
@@ -21,7 +25,7 @@ Camera::Camera(const glm::vec3& o, const glm::vec3& lookat, const glm::vec3& vup
     , lens_radius(aperture / 2.0F)
     , time1(t1)
     , time2(t2) {
-    auto theta = static_cast<float>(M_PI) / 180.0F * vfov; // NOLINT(readability-magic-numbers)
+    auto theta = static_cast<float>(std::numbers::pi) / 180.0F * vfov; // NOLINT(readability-magic-numbers)
     auto h = std::tan(theta / 2.0F);
     auto viewport_height = 2.0F * h;
     auto viewport_width = aspect_ratio * viewport_height;

@@ -1,5 +1,13 @@
+#include <memory>
+#include <utility>
+
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
+
 #include "lambertian.hpp"
+#include "ray.hpp"
 #include "solid_color.hpp"
+#include "texture.hpp"
 #include "utils.hpp"
 
 Lambertian::Lambertian(const glm::vec3& a)

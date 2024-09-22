@@ -1,4 +1,10 @@
+#include <utility>
+
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
+
 #include "metal.hpp"
+#include "ray.hpp"
 #include "utils.hpp"
 
 Metal::Metal(const glm::vec3& a, float f)

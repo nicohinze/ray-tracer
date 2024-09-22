@@ -1,8 +1,13 @@
-#include <iostream>
+#include <cmath>
+#include <numbers>
 #include <optional>
+#include <utility>
 
-#include <glm/glm.hpp>
+#include <glm/exponential.hpp>
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
 
+#include "aabb.hpp"
 #include "geometry_object.hpp"
 #include "intersection.hpp"
 #include "material.hpp"
@@ -38,15 +43,15 @@ std::optional<Intersection> Sphere::intersect(const Ray& ray) const {
     return std::nullopt;
 }
 
-std::optional<AABB> Sphere::bounding_box(float /*t0*/, float /*t1*/) const {
-    return AABB(center - glm::vec3(radius, radius, radius), center + glm::vec3(radius, radius, radius));
+AABB Sphere::bounding_box(float /*t0*/, float /*t1*/) const {
+    return {center - glm::vec3(radius, radius, radius), center + glm::vec3(radius, radius, radius)};
 }
 
 std::pair<float, float> Sphere::get_uv(const glm::vec3& p) const {
     //     <1 0 0> yields <0.50 0.50>       <-1  0  0> yields <0.00 0.50>
     //     <0 1 0> yields <0.50 1.00>       < 0 -1  0> yields <0.50 0.00>
     //     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
-    const auto phi = std::atan2(-p.z, p.x) + static_cast<float>(M_PI);
+    const auto phi = std::atan2(-p.z, p.x) + static_cast<float>(std::numbers::pi);
     const auto theta = std::acos(-p.y);
-    return std::make_pair(phi / (2 * M_PI), theta / M_PI);
+    return std::make_pair(phi / (2 * std::numbers::pi), theta / std::numbers::pi);
 }

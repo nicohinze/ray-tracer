@@ -1,3 +1,5 @@
+#include <glm/fwd.hpp>
+
 #include "light.hpp"
 
 Light::Light(const glm::vec3& p, float i)

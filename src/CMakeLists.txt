@@ -21,7 +21,7 @@ set(SOURCE_FILES
 )
 
 add_library(${TARGET}-lib STATIC ${SOURCE_FILES})
-target_compile_features(${TARGET}-lib PRIVATE cxx_std_17)
+target_compile_features(${TARGET}-lib PRIVATE cxx_std_20)
 set_target_properties(${TARGET}-lib PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(${TARGET}-lib PRIVATE ${COMPILE_FLAGS})
 target_link_options(${TARGET}-lib PRIVATE ${LINK_FLAGS})
@@ -31,7 +31,7 @@ target_link_libraries(${TARGET}-lib PUBLIC glm)
 
 add_executable(${TARGET} main.cpp)
 target_link_libraries(${TARGET} PRIVATE ${TARGET}-lib)
-target_compile_features(${TARGET} PRIVATE cxx_std_17)
+target_compile_features(${TARGET} PRIVATE cxx_std_20)
 set_target_properties(${TARGET} PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(${TARGET} PRIVATE ${COMPILE_FLAGS})
 target_link_options(${TARGET} PRIVATE ${LINK_FLAGS})

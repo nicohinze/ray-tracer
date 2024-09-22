@@ -1,3 +1,5 @@
+#include <glm/fwd.hpp>
+
 #include "solid_color.hpp"
 
 SolidColor::SolidColor(const glm::vec3& c)

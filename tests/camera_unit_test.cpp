@@ -1,8 +1,11 @@
-#define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
+#define CATCH_CONFIG_MAIN
+
+#include <numbers>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-#include <glm/glm.hpp>
+#include <glm/fwd.hpp>
 
 #include "camera.hpp"
 
@@ -27,7 +30,7 @@ TEST_CASE("Default camera settings", "[camera]") {
 }
 
 TEST_CASE("Custom camera settings without defocus blur", "[camera]") {
-    auto origin = glm::vec3(0, static_cast<float>(M_PI) / 4.0F, -static_cast<float>(M_PI) / 4.0F); // NOLINT(readability-magic-numbers)
+    auto origin = glm::vec3(0, static_cast<float>(std::numbers::pi) / 4.0F, -static_cast<float>(std::numbers::pi) / 4.0F); // NOLINT(readability-magic-numbers)
     auto lookto = glm::vec3(0, -1, -1);
     auto vup = glm::vec3(0, 1, 0);
     auto vfov = 90.0F;               // NOLINT(readability-magic-numbers)

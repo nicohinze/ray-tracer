@@ -2,11 +2,9 @@
 
 #include <atomic>
 #include <condition_variable>
-#include <cstdint>
 #include <map>
 #include <memory>
 #include <mutex>
-#include <random>
 #include <string>
 #include <vector>
 
@@ -17,7 +15,6 @@
 #include "light.hpp"
 #include "material.hpp"
 #include "ray.hpp"
-#include "sphere.hpp"
 
 class Raytracer {
   private:
@@ -29,7 +26,7 @@ class Raytracer {
     std::vector<glm::vec3> framebuffer;
     Camera camera;
     std::map<std::string, std::unique_ptr<Material>> materials;
-    std::unique_ptr<BVH_Node> bvh_root;
+    std::unique_ptr<BVHNode> bvh_root;
     std::vector<Light> lights;
     std::mutex mutex;
     std::condition_variable cv;

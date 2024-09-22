@@ -7,6 +7,6 @@ class SolidColor : public Texture {
     glm::vec3 color;
 
   public:
-    SolidColor(const glm::vec3& c);
+    explicit SolidColor(const glm::vec3& c);
     glm::vec3 value(float u, float v, const glm::vec3& p) const override;
 };

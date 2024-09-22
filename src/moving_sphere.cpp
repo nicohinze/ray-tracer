@@ -1,4 +1,18 @@
+#include <cmath>
+#include <numbers>
+#include <optional>
+#include <utility>
+
+#include <glm/exponential.hpp>
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
+
+#include "aabb.hpp"
+#include "geometry_object.hpp"
+#include "intersection.hpp"
+#include "material.hpp"
 #include "moving_sphere.hpp"
+#include "ray.hpp"
 
 MovingSphere::MovingSphere(const glm::vec3 c1, const glm::vec3 c2, float r, float t1, float t2, const Material* m)
     : GeometryObject(m), center1(c1), center2(c2), radius(r), time1(t1), time2(t2) {}
@@ -34,7 +48,7 @@ std::optional<Intersection> MovingSphere::intersect(const Ray& ray) const {
     return std::nullopt;
 }
 
-std::optional<AABB> MovingSphere::bounding_box(float t0, float t1) const {
+AABB MovingSphere::bounding_box(float t0, float t1) const {
     const auto aabb0 = AABB(get_center(t0) - glm::vec3(radius, radius, radius), get_center(t0) + glm::vec3(radius, radius, radius));
     const auto aabb1 = AABB(get_center(t1) - glm::vec3(radius, radius, radius), get_center(t1) + glm::vec3(radius, radius, radius));
     return surrounding_box(aabb0, aabb1);
@@ -44,7 +58,7 @@ std::pair<float, float> MovingSphere::get_uv(const glm::vec3& p) const {
     //     <1 0 0> yields <0.50 0.50>       <-1  0  0> yields <0.00 0.50>
     //     <0 1 0> yields <0.50 1.00>       < 0 -1  0> yields <0.50 0.00>
     //     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
-    const auto phi = std::atan2(-p.z, p.x) + static_cast<float>(M_PI);
+    const auto phi = std::atan2(-p.z, p.x) + static_cast<float>(std::numbers::pi);
     const auto theta = std::acos(-p.y);
-    return std::make_pair(phi / (2 * M_PI), theta / M_PI);
+    return std::make_pair(phi / (2 * std::numbers::pi), theta / std::numbers::pi);
 }

@@ -1,3 +1,8 @@
+#include <cmath>
+
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
+
 #include "ray.hpp"
 
 Ray::Ray(const glm::vec3& o, const glm::vec3& d, float t)

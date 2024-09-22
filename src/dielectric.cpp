@@ -1,4 +1,11 @@
+#include <cmath>
+#include <utility>
+
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
+
 #include "dielectric.hpp"
+#include "ray.hpp"
 #include "utils.hpp"
 
 Dielectric::Dielectric(float r)

@@ -1,16 +1,22 @@
 #include <algorithm>
-#include <deque>
-#include <iostream>
+#include <atomic>
+#include <cstddef>
+#include <memory>
+#include <optional>
 #include <vector>
 
+#include "aabb.hpp"
 #include "bvh_node.hpp"
 #include "geometry_object.hpp"
+#include "hittable.hpp"
+#include "intersection.hpp"
+#include "ray.hpp"
 #include "utils.hpp"
 
 bool axis_compare(const std::shared_ptr<Hittable>& obj1, const std::shared_ptr<Hittable>& obj2, int axis) {
     auto bb1 = obj1->bounding_box(0, 0);
     auto bb2 = obj2->bounding_box(0, 0);
-    return bb1->get_min()[axis] < bb2->get_min()[axis];
+    return bb1.get_min()[axis] < bb2.get_min()[axis];
 }
 
 bool x_axis_compare(const std::shared_ptr<Hittable>& obj1, const std::shared_ptr<Hittable>& obj2) {
@@ -25,13 +31,13 @@ bool z_axis_compare(const std::shared_ptr<Hittable>& obj1, const std::shared_ptr
     return axis_compare(obj1, obj2, 2);
 }
 
-std::atomic<std::size_t> BVH_Node::intersection_tests = 0; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+std::atomic<std::size_t> BVHNode::intersection_tests = 0; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
-BVH_Node::BVH_Node(const std::vector<std::shared_ptr<Hittable>>& objects, float t0, float t1)
-    : BVH_Node(objects, 0, objects.size(), t0, t1) {
+BVHNode::BVHNode(const std::vector<std::shared_ptr<Hittable>>& objects, float t0, float t1)
+    : BVHNode(objects, 0, objects.size(), t0, t1) {
 }
 
-BVH_Node::BVH_Node(const std::vector<std::shared_ptr<Hittable>>& objects, std::size_t start, std::size_t end, float t0, float t1) {
+BVHNode::BVHNode(const std::vector<std::shared_ptr<Hittable>>& objects, std::size_t start, std::size_t end, float t0, float t1) {
     auto copy = objects;
     const auto axis = random_int(0, 2);
     const auto comparator = (axis == 0) ? x_axis_compare : ((axis == 1) ? y_axis_compare : z_axis_compare);
@@ -50,19 +56,15 @@ BVH_Node::BVH_Node(const std::vector<std::shared_ptr<Hittable>>& objects, std::s
     } else {
         std::sort(copy.begin() + static_cast<int>(start), copy.begin() + static_cast<int>(end), comparator);
         const auto mid = start + size / 2;
-        left = std::make_shared<BVH_Node>(copy, start, mid, t0, t1);
-        right = std::make_shared<BVH_Node>(copy, mid, end, t0, t1);
+        left = std::make_shared<BVHNode>(copy, start, mid, t0, t1);
+        right = std::make_shared<BVHNode>(copy, mid, end, t0, t1);
     }
     const auto left_bb = left->bounding_box(t0, t1);
     const auto right_bb = right->bounding_box(t0, t1);
-    if (left_bb.has_value() && right_bb.has_value()) {
-        aabb = surrounding_box(left_bb.value(), right_bb.value());
-    } else {
-        std::cerr << "No valid BB";
-    }
+    aabb = surrounding_box(left_bb, right_bb);
 }
 
-std::optional<Intersection> BVH_Node::intersect(const Ray& ray) const {
+std::optional<Intersection> BVHNode::intersect(const Ray& ray) const {
     intersection_tests++;
     if (aabb.intersect(ray)) {
         const auto left_intersect = left->intersect(ray);
@@ -82,10 +84,10 @@ std::optional<Intersection> BVH_Node::intersect(const Ray& ray) const {
     return std::nullopt;
 }
 
-std::optional<AABB> BVH_Node::bounding_box(float /*t0*/, float /*t1*/) const {
+AABB BVHNode::bounding_box(float /*t0*/, float /*t1*/) const {
     return aabb;
 }
 
-std::size_t BVH_Node::get_intersection_tests() {
+std::size_t BVHNode::get_intersection_tests() {
     return intersection_tests;
 }

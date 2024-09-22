@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "raytracer.hpp"
-#include "sphere.hpp"
 
 int main() {
     const auto enable_output = true;
@@ -25,9 +24,9 @@ int main() {
         std::cout << "Rendering took: "
                   << std::setfill('0') << std::setw(2) << min.count() << ':'
                   << std::setfill('0') << std::setw(2) << s.count() << '.'
-                  << std::setfill('0') << std::setw(3) << ms.count() << std::endl
-                  << "Rays cast: " << raytracer.get_rays_cast() << std::endl
-                  << "Intersection tests: " << raytracer.get_intersection_tests() << std::endl;
+                  << std::setfill('0') << std::setw(3) << ms.count() << '\n'
+                  << "Rays cast: " << raytracer.get_rays_cast() << '\n'
+                  << "Intersection tests: " << raytracer.get_intersection_tests() << '\n';
     }
     raytracer.write_framebuffer("out.ppm");
 }

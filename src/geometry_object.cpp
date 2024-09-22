@@ -1,5 +1,3 @@
-#include <memory>
-
 #include "geometry_object.hpp"
 #include "material.hpp"
 

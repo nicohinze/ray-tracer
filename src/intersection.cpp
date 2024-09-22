@@ -1,4 +1,4 @@
-#include <memory>
+#include <glm/fwd.hpp>
 
 #include "intersection.hpp"
 #include "material.hpp"

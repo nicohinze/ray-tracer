@@ -1,5 +1,12 @@
+#include <cmath>
+#include <memory>
+#include <utility>
+
+#include <glm/fwd.hpp>
+
 #include "checker_texture.hpp"
 #include "solid_color.hpp"
+#include "texture.hpp"
 
 CheckerTexture::CheckerTexture(const glm::vec3& o, const glm::vec3& e)
     : odd(std::make_shared<SolidColor>(o)), even(std::make_shared<SolidColor>(e)) {}

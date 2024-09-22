@@ -8,6 +8,11 @@
 
 class Material {
   public:
+    Material() = default;
+    Material(const Material&) = default;
+    Material(Material&&) = delete;
+    Material& operator=(const Material&) = default;
+    Material& operator=(Material&&) = delete;
     virtual ~Material() = default;
     virtual std::pair<glm::vec3, Ray> scatter(const Ray& ray, const glm::vec3& pos, const glm::vec3& n, float u, float v) const = 0;
 

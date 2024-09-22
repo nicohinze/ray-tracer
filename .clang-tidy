@@ -9,6 +9,7 @@ Checks: >
   -cppcoreguidelines-pro-type-union-access,
   -fuchsia-default-arguments,
   -fuchsia-default-arguments-calls,
+  -fuchsia-default-arguments-declarations,
   -hicpp-uppercase-literal-suffix,
   -llvm-header-guard,
   -llvmlibc-callee-namespace,
@@ -18,6 +19,8 @@ Checks: >
   -misc-non-private-member-variables-in-classes,
   -modernize-use-nodiscard,
   -modernize-use-trailing-return-type,
+  -readability-avoid-nested-conditional-operator,
+  -readability-function-cognitive-complexity,
   -readability-identifier-length,
   -readability-uppercase-literal-suffix
 

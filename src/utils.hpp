@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 #include <glm/glm.hpp>
 
 void show_progress(std::size_t percent, std::size_t total_length);

@@ -1,18 +1,23 @@
+#include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <mutex>
+#include <optional>
 #include <random>
+#include <string>
 #include <thread>
-
-#include <glm/glm.hpp>
+#include <utility>
+#include <vector>
 
 #include "bvh_node.hpp"
 #include "checker_texture.hpp"
 #include "dielectric.hpp"
-#include "geometry_object.hpp"
+#include "hittable.hpp"
+#include "intersection.hpp"
 #include "lambertian.hpp"
-#include "light.hpp"
 #include "metal.hpp"
 #include "moving_sphere.hpp"
 #include "ray.hpp"
@@ -161,7 +166,7 @@ void Raytracer::create_simple_scene(std::size_t width, std::size_t height) {
     geometry_objects.push_back(std::make_shared<Sphere>(glm::vec3(-1.0, -1.5, -12), 2, materials["glass"].get()));     // NOLINT(readability-magic-numbers)
     geometry_objects.push_back(std::make_shared<Sphere>(glm::vec3(1.5, -0.5, -18), 3, materials["red_rubber"].get())); // NOLINT(readability-magic-numbers)
     geometry_objects.push_back(std::make_shared<Sphere>(glm::vec3(7, 5, -18), 4, materials["mirror"].get()));          // NOLINT(readability-magic-numbers)
-    bvh_root = std::make_unique<BVH_Node>(geometry_objects, 0.0, 1.0);
+    bvh_root = std::make_unique<BVHNode>(geometry_objects, 0.0, 1.0);
 }
 
 void Raytracer::create_complex_scene(std::size_t width, std::size_t height) {
@@ -217,7 +222,7 @@ void Raytracer::create_complex_scene(std::size_t width, std::size_t height) {
             }
         }
     }
-    bvh_root = std::make_unique<BVH_Node>(geometry_objects, 0.0, 1.0);
+    bvh_root = std::make_unique<BVHNode>(geometry_objects, 0.0, 1.0);
 }
 
 void Raytracer::create_two_spheres_scene(std::size_t width, std::size_t height) {
@@ -244,5 +249,5 @@ void Raytracer::create_two_spheres_scene(std::size_t width, std::size_t height) 
     auto geometry_objects = std::vector<std::shared_ptr<Hittable>>();
     geometry_objects.push_back(std::make_shared<Sphere>(glm::vec3(0, -10, 0), 10, materials["checker"].get())); // NOLINT(readability-magic-numbers)
     geometry_objects.push_back(std::make_shared<Sphere>(glm::vec3(0, 10, 0), 10, materials["checker"].get()));  // NOLINT(readability-magic-numbers)
-    bvh_root = std::make_unique<BVH_Node>(geometry_objects, 0.0, 1.0);
+    bvh_root = std::make_unique<BVHNode>(geometry_objects, 0.0, 1.0);
 }

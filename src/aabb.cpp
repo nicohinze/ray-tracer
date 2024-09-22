@@ -1,4 +1,8 @@
+#include <algorithm>
+#include <limits>
+
 #include "aabb.hpp"
+#include "ray.hpp"
 
 AABB::AABB()
     : min(glm::vec3(0, 0, 0)), max(glm::vec3(0, 0, 0)) {
