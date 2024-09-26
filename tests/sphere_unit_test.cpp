@@ -5,9 +5,11 @@
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include <glm/fwd.hpp>
 
-#include "intersection.hpp"
-#include "ray.hpp"
-#include "sphere.hpp"
+#include "collisions/intersection.hpp"
+#include "collisions/ray.hpp"
+#include "geometry/sphere.hpp"
+
+namespace raytracer::tests::geometry {
 
 static constexpr auto MARGIN = 0.001;
 
@@ -18,9 +20,9 @@ void require_vec_equal(const glm::vec3& vec1, const glm::vec3& vec2) {
 }
 
 TEST_CASE("Ray-sphere intersection", "[sphere]") {
-    auto sphere = Sphere(glm::vec3(0, 0, 0), 1, nullptr);
-    auto ray = Ray(glm::vec3(0, 1, 1), glm::vec3(0, 0, -1));
-    auto expected = Intersection(1.0, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), nullptr, 0.25, 1); // NOLINT(readability-magic-numbers)
+    auto sphere = raytracer::geometry::Sphere(glm::vec3(0, 0, 0), 1, nullptr);
+    auto ray = collisions::Ray(glm::vec3(0, 1, 1), glm::vec3(0, 0, -1));
+    auto expected = collisions::Intersection(1.0, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), nullptr, 0.25, 1); // NOLINT(readability-magic-numbers)
     auto intersec = sphere.intersect(ray);
     if (intersec.has_value()) {
         REQUIRE_THAT(intersec->get_distance(), Catch::Matchers::WithinAbs(expected.get_distance(), MARGIN));
@@ -32,9 +34,9 @@ TEST_CASE("Ray-sphere intersection", "[sphere]") {
         FAIL("No intersection occured.");
     }
 
-    sphere = Sphere(glm::vec3(0, 1, 0), 1, nullptr);
-    ray = Ray(glm::vec3(0, -1, 0), glm::vec3(0, 1, 0));
-    expected = Intersection(1.0, glm::vec3(0, 0, 0), glm::vec3(0, -1, 0), nullptr, 0.5, 0);
+    sphere = raytracer::geometry::Sphere(glm::vec3(0, 1, 0), 1, nullptr);
+    ray = collisions::Ray(glm::vec3(0, -1, 0), glm::vec3(0, 1, 0));
+    expected = collisions::Intersection(1.0, glm::vec3(0, 0, 0), glm::vec3(0, -1, 0), nullptr, 0.5, 0);
     intersec = sphere.intersect(ray);
     if (intersec.has_value()) {
         REQUIRE_THAT(intersec->get_distance(), Catch::Matchers::WithinAbs(expected.get_distance(), MARGIN));
@@ -46,9 +48,9 @@ TEST_CASE("Ray-sphere intersection", "[sphere]") {
         FAIL("No intersection occured.");
     }
 
-    sphere = Sphere(glm::vec3(0, 0, 0), 1, nullptr);
-    ray = Ray(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    expected = Intersection(1.0, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), nullptr, 0.5, 1);
+    sphere = raytracer::geometry::Sphere(glm::vec3(0, 0, 0), 1, nullptr);
+    ray = collisions::Ray(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    expected = collisions::Intersection(1.0, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), nullptr, 0.5, 1);
     intersec = sphere.intersect(ray);
     if (intersec.has_value()) {
         REQUIRE_THAT(intersec->get_distance(), Catch::Matchers::WithinAbs(expected.get_distance(), MARGIN));
@@ -60,8 +62,10 @@ TEST_CASE("Ray-sphere intersection", "[sphere]") {
         FAIL("No intersection occured.");
     }
 
-    sphere = Sphere(glm::vec3(0, 0, 0), 1, nullptr);
-    ray = Ray(glm::vec3(0, -2, 0), glm::vec3(1, 0, 0));
+    sphere = raytracer::geometry::Sphere(glm::vec3(0, 0, 0), 1, nullptr);
+    ray = collisions::Ray(glm::vec3(0, -2, 0), glm::vec3(1, 0, 0));
     intersec = sphere.intersect(ray);
     REQUIRE(!intersec.has_value());
 }
+
+} // namespace raytracer::tests::geometry

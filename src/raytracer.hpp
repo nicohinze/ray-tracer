@@ -10,11 +10,13 @@
 
 #include <glm/glm.hpp>
 
-#include "bvh_node.hpp"
-#include "camera.hpp"
-#include "light.hpp"
-#include "material.hpp"
-#include "ray.hpp"
+#include "camera/camera.hpp"
+#include "collisions/bvh_node.hpp"
+#include "collisions/ray.hpp"
+#include "lighting/light.hpp"
+#include "materials/material.hpp"
+
+namespace raytracer {
 
 class Raytracer {
   private:
@@ -24,10 +26,10 @@ class Raytracer {
     const std::size_t RAYS_PER_PIXEL;
 
     std::vector<glm::vec3> framebuffer;
-    Camera camera;
-    std::map<std::string, std::unique_ptr<Material>> materials;
-    std::unique_ptr<BVHNode> bvh_root;
-    std::vector<Light> lights;
+    camera::Camera camera;
+    std::map<std::string, std::unique_ptr<materials::Material>> materials;
+    std::unique_ptr<collisions::BVHNode> bvh_root;
+    std::vector<lighting::Light> lights;
     std::mutex mutex;
     std::condition_variable cv;
     std::atomic<std::size_t> finished_threads = 0;
@@ -36,9 +38,9 @@ class Raytracer {
     bool show_progress;
 
     void render_lines(std::size_t offset, std::size_t stride);
-    glm::vec3 cast_ray(const Ray& ray, std::size_t recursion_depth);
-    std::optional<Intersection> get_closest_intersection(const Ray& ray);
-    glm::vec3 calculate_lighting(const Ray& ray, const Intersection& intersect, std::size_t recursion_depth);
+    glm::vec3 cast_ray(const collisions::Ray& ray, std::size_t recursion_depth);
+    std::optional<collisions::Intersection> get_closest_intersection(const collisions::Ray& ray);
+    glm::vec3 calculate_lighting(const collisions::Ray& ray, const collisions::Intersection& intersect, std::size_t recursion_depth);
     void create_simple_scene(std::size_t width, std::size_t height);
     void create_complex_scene(std::size_t width, std::size_t height);
     void create_two_spheres_scene(std::size_t width, std::size_t height);
@@ -51,3 +53,5 @@ class Raytracer {
     std::size_t get_intersection_tests() const;
     void set_show_progress(bool show);
 };
+
+} // namespace raytracer

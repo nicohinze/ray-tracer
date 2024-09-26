@@ -7,7 +7,9 @@
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include <glm/fwd.hpp>
 
-#include "camera.hpp"
+#include "camera/camera.hpp"
+
+namespace raytracer::tests::camera {
 
 void require_vec_equal(const glm::vec3& vec1, const glm::vec3& vec2) {
     static constexpr auto MARGIN = 0.00001;
@@ -18,13 +20,13 @@ void require_vec_equal(const glm::vec3& vec1, const glm::vec3& vec2) {
 
 TEST_CASE("Default camera settings", "[camera]") {
     auto origin = glm::vec3(0, 0, 0);
-    auto c = Camera();
+    auto c = raytracer::camera::Camera();
     auto r = c.get_ray(0, 0);
-    auto expected = Ray(origin, glm::vec3(-0.68599, -0.51449, -0.51449)); // NOLINT(readability-magic-numbers)
+    auto expected = collisions::Ray(origin, glm::vec3(-0.68599, -0.51449, -0.51449)); // NOLINT(readability-magic-numbers)
     require_vec_equal(r.get_origin(), expected.get_origin());
     require_vec_equal(r.get_direction(), expected.get_direction());
     r = c.get_ray(0.5, 0.5);
-    expected = Ray(origin, glm::vec3(0, 0, -1));
+    expected = collisions::Ray(origin, glm::vec3(0, 0, -1));
     require_vec_equal(r.get_origin(), expected.get_origin());
     require_vec_equal(r.get_direction(), expected.get_direction());
 }
@@ -37,7 +39,7 @@ TEST_CASE("Custom camera settings without defocus blur", "[camera]") {
     auto aspect_ratio = 4.0F / 3.0F; // NOLINT(readability-magic-numbers)
     auto aperture = 0.0F;
     auto focus_dist = 1.0F;
-    auto c = Camera(
+    auto c = raytracer::camera::Camera(
         origin,
         origin + lookto,
         vup,
@@ -46,11 +48,13 @@ TEST_CASE("Custom camera settings without defocus blur", "[camera]") {
         aperture,
         focus_dist);
     auto r = c.get_ray(0, 0);
-    auto expected = Ray(origin, glm::vec3(-0.68599, -0.7276, 0)); // NOLINT(readability-magic-numbers)
+    auto expected = collisions::Ray(origin, glm::vec3(-0.68599, -0.7276, 0)); // NOLINT(readability-magic-numbers)
     require_vec_equal(r.get_origin(), expected.get_origin());
     require_vec_equal(r.get_direction(), expected.get_direction());
     r = c.get_ray(0.5, 0.5);
-    expected = Ray(origin, glm::vec3(0, -0.7071, -0.7071)); // NOLINT(readability-magic-numbers)
+    expected = collisions::Ray(origin, glm::vec3(0, -0.7071, -0.7071)); // NOLINT(readability-magic-numbers)
     require_vec_equal(r.get_origin(), expected.get_origin());
     require_vec_equal(r.get_direction(), expected.get_direction());
 }
+
+} // namespace raytracer::tests::camera
