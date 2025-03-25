@@ -30,12 +30,12 @@
 
 namespace raytracer {
 
-Raytracer::Raytracer(std::size_t width, std::size_t height, std::size_t recursion_depth, std::size_t ray_per_pixel)
+Raytracer::Raytracer(std::size_t width, std::size_t height, std::size_t recursion_depth, std::size_t ray_per_pixel, bool show_progress)
     : WIDTH(width)
     , HEIGHT(height)
     , MAX_RECURSION_DEPTH(recursion_depth)
     , RAYS_PER_PIXEL(ray_per_pixel)
-    , show_progress(true) {
+    , show_progress(show_progress) {
     framebuffer.reserve(width * height);
     // create_simple_scene(width, height);
     // create_complex_scene(width, height);

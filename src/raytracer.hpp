@@ -47,7 +47,7 @@ class Raytracer {
     void create_earth_scene(std::size_t width, std::size_t height);
 
   public:
-    Raytracer(std::size_t width, std::size_t height, std::size_t recursion_depth, std::size_t ray_per_pixel);
+    Raytracer(std::size_t width, std::size_t height, std::size_t recursion_depth, std::size_t ray_per_pixel, bool show_progress);
     void trace_rays();
     void write_framebuffer(const std::string& filename) const;
     std::size_t get_rays_cast() const;
