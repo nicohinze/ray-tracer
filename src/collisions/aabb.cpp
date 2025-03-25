@@ -43,11 +43,13 @@ AABB surrounding_box(const AABB& aabb0, const AABB& aabb1) {
     const auto p0 = glm::vec3(
         std::min(aabb0.get_min().x, aabb1.get_min().x),
         std::min(aabb0.get_min().y, aabb1.get_min().y),
-        std::min(aabb0.get_min().z, aabb1.get_min().z));
+        std::min(aabb0.get_min().z, aabb1.get_min().z)
+    );
     const auto p1 = glm::vec3(
         std::max(aabb0.get_max().x, aabb1.get_max().x),
         std::max(aabb0.get_max().y, aabb1.get_max().y),
-        std::max(aabb0.get_max().z, aabb1.get_max().z));
+        std::max(aabb0.get_max().z, aabb1.get_max().z)
+    );
     return {p0, p1};
 }
 

@@ -156,7 +156,8 @@ void Raytracer::create_simple_scene(std::size_t width, std::size_t height) {
         vfov,
         aspect_ratio,
         aperture,
-        focus_dist);
+        focus_dist
+    );
 
     materials["ivory"] = std::make_unique<materials::Lambertian>(glm::vec3(0.4, 0.4, 0.3));        // NOLINT(readability-magic-numbers)
     materials["red_rubber"] = std::make_unique<materials::Lambertian>(glm::vec3(0.9, 0.05, 0.05)); // NOLINT(readability-magic-numbers)
@@ -188,7 +189,8 @@ void Raytracer::create_complex_scene(std::size_t width, std::size_t height) {
         aperture,
         focus_dist,
         0.0,
-        1.0);
+        1.0
+    );
 
     materials["ground"] = std::make_unique<materials::Lambertian>(glm::vec3(0.5, 0.5, 0.5));      // NOLINT(readability-magic-numbers)
     materials["big_diffuse"] = std::make_unique<materials::Lambertian>(glm::vec3(0.4, 0.2, 0.1)); // NOLINT(readability-magic-numbers)
@@ -244,7 +246,8 @@ void Raytracer::create_two_spheres_scene(std::size_t width, std::size_t height) 
         aperture,
         focus_dist,
         0.0,
-        1.0);
+        1.0
+    );
 
     auto checker = std::make_unique<materials::CheckerTexture>(glm::vec3(0.2, 0.3, 0.1), glm::vec3(0.9, 0.9, 0.9)); // NOLINT(readability-magic-numbers)
     materials["checker"] = std::make_unique<materials::Lambertian>(std::move(checker));

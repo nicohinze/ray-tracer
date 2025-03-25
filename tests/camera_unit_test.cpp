@@ -46,7 +46,8 @@ TEST_CASE("Custom camera settings without defocus blur", "[camera]") {
         vfov,
         aspect_ratio,
         aperture,
-        focus_dist);
+        focus_dist
+    );
     auto r = c.get_ray(0, 0);
     auto expected = collisions::Ray(origin, glm::vec3(-0.68599, -0.7276, 0)); // NOLINT(readability-magic-numbers)
     require_vec_equal(r.get_origin(), expected.get_origin());

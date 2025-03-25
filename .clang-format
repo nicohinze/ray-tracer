@@ -2,7 +2,7 @@ Language: Cpp
 Standard: Cpp11
 
 AccessModifierOffset: -2
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: BlockIndent
 AlignEscapedNewlines: Right
 AlignOperands: true
 AllowShortBlocksOnASingleLine: false
