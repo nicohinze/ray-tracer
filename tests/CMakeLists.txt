@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 find_package(Catch2 3 REQUIRED)
 
-set(TEST_FILES camera_unit_test.cpp ray_unit_test.cpp sphere_unit_test.cpp)
+set(TEST_FILES camera_unit_test.cpp image_texture_unit_test.cpp ray_unit_test.cpp sphere_unit_test.cpp)
 
 foreach(file_name ${TEST_FILES})
     get_filename_component(file_basename ${file_name} NAME_WE)

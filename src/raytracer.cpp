@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -18,8 +19,10 @@
 #include "collisions/ray.hpp"
 #include "geometry/moving_sphere.hpp"
 #include "geometry/sphere.hpp"
+#include "glm/fwd.hpp"
 #include "materials/checker_texture.hpp"
 #include "materials/dielectric.hpp"
+#include "materials/image_texture.hpp"
 #include "materials/lambertian.hpp"
 #include "materials/metal.hpp"
 #include "raytracer.hpp"
@@ -35,8 +38,9 @@ Raytracer::Raytracer(std::size_t width, std::size_t height, std::size_t recursio
     , show_progress(true) {
     framebuffer.reserve(width * height);
     // create_simple_scene(width, height);
-    create_complex_scene(width, height);
+    // create_complex_scene(width, height);
     // create_two_spheres_scene(width, height);
+    create_earth_scene(width, height);
 }
 
 void Raytracer::trace_rays() {
@@ -69,7 +73,7 @@ void Raytracer::write_framebuffer(const std::string& filename) const {
     std::ofstream ofs;
     ofs.open(filename, std::ios_base::out | std::ios_base::trunc);
     ofs << "P6\n"
-        << WIDTH << " " << HEIGHT << "\n255\n";
+        << WIDTH << ' ' << HEIGHT << "\n255\n";
     for (std::size_t i = 0; i < WIDTH * HEIGHT; ++i) {
         for (auto j = 0; j < 3; ++j) {
             ofs << static_cast<unsigned char>(255 * std::max(0.0F, std::min(1.0F, std::sqrt(framebuffer[i][j]))));
@@ -254,6 +258,35 @@ void Raytracer::create_two_spheres_scene(std::size_t width, std::size_t height) 
     auto geometry_objects = std::vector<std::shared_ptr<collisions::Hittable>>();
     geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(0, -10, 0), 10, materials["checker"].get())); // NOLINT(readability-magic-numbers)
     geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(0, 10, 0), 10, materials["checker"].get()));  // NOLINT(readability-magic-numbers)
+    bvh_root = std::make_unique<collisions::BVHNode>(geometry_objects, 0.0, 1.0);
+}
+
+void Raytracer::create_earth_scene(std::size_t width, std::size_t height) {
+    const auto origin = glm::vec3(13, 2, 3); // NOLINT(readability-magic-numbers)
+    const auto lookat = glm::vec3(0, 0, 0);
+    const auto vup = glm::vec3(0, 1, 0);
+    const auto vfov = 20.0F; // NOLINT(readability-magic-numbers)
+    const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+    const auto aperture = 0.1F;    // NOLINT(readability-magic-numbers)
+    const auto focus_dist = 10.0F; // NOLINT(readability-magic-numbers)
+    camera = camera::Camera(
+        origin,
+        lookat,
+        vup,
+        vfov,
+        aspect_ratio,
+        aperture,
+        focus_dist,
+        0.0,
+        1.0
+    );
+
+    if (const auto data_dir = utils::data_directory_path()) {
+        auto earth_texture = std::make_unique<materials::ImageTexture>((data_dir.value() / std::filesystem::path("earthmap.jpg")).string());
+        materials["earth"] = std::make_unique<materials::Lambertian>(std::move(earth_texture));
+    }
+    auto geometry_objects = std::vector<std::shared_ptr<collisions::Hittable>>();
+    geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(0, 0, 0), 2, materials["earth"].get()));
     bvh_root = std::make_unique<collisions::BVHNode>(geometry_objects, 0.0, 1.0);
 }
 

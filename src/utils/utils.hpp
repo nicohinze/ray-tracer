@@ -1,4 +1,6 @@
 #pragma once
+#include <filesystem>
+#include <optional>
 
 #include <glm/glm.hpp>
 
@@ -11,5 +13,6 @@ float random_float();
 float random_float(float min, float max);
 glm::vec3 random_in_unit_sphere();
 glm::vec3 random_in_unit_disk();
+std::optional<std::filesystem::path> data_directory_path();
 
 } // namespace raytracer::utils

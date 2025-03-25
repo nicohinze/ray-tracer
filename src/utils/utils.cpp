@@ -1,11 +1,15 @@
 #include <asm-generic/ioctls.h>
 #include <cstddef>
+#include <filesystem>
 #include <iomanip>
 #include <iostream>
+#include <optional>
 #include <random>
 #include <string>
 #include <sys/ioctl.h>
+#include <system_error>
 #include <unistd.h>
+#include <vector>
 
 #include <glm/fwd.hpp>
 #include <glm/geometric.hpp>
@@ -15,7 +19,7 @@
 namespace raytracer::utils {
 
 std::size_t get_terminal_width() {
-    struct winsize ws {};
+    struct winsize ws{};
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws); // NOLINT(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
     return ws.ws_col;
 }
@@ -86,6 +90,22 @@ glm::vec3 random_in_unit_disk() {
             return p;
         }
     }
+}
+
+std::optional<std::filesystem::path> data_directory_path() {
+    const auto current_path = std::filesystem::current_path();
+    for (const auto& rel_path : std::vector<std::filesystem::path>{
+             "data/",
+             "../data/",
+             "../../data/",
+         }) {
+        std::error_code ec;
+        auto abs_path = std::filesystem::canonical(current_path / rel_path, ec);
+        if (ec == std::errc()) {
+            return abs_path;
+        }
+    }
+    return std::nullopt;
 }
 
 } // namespace raytracer::utils

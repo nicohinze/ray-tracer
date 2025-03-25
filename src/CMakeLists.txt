@@ -13,6 +13,7 @@ set(SOURCE_FILES
     lighting/light.cpp
     materials/checker_texture.cpp
     materials/dielectric.cpp
+    materials/image_texture.cpp
     materials/lambertian.cpp
     materials/metal.cpp
     materials/solid_color.cpp
@@ -28,6 +29,7 @@ target_link_options(${TARGET}-lib PRIVATE ${LINK_FLAGS})
 find_package(Threads REQUIRED)
 target_link_libraries(${TARGET}-lib PRIVATE Threads::Threads)
 target_link_libraries(${TARGET}-lib PUBLIC glm)
+target_include_directories(${TARGET}-lib PRIVATE "${PROJECT_SOURCE_DIR}/external")
 target_include_directories(${TARGET}-lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(${TARGET} main.cpp)
@@ -37,3 +39,9 @@ set_target_properties(${TARGET} PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(${TARGET} PRIVATE ${COMPILE_FLAGS})
 target_link_options(${TARGET} PRIVATE ${LINK_FLAGS})
 target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_custom_command(
+    TARGET ${TARGET}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data ${CMAKE_BINARY_DIR}/data
+)
