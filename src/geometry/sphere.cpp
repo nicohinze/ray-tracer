@@ -19,7 +19,7 @@ namespace raytracer::geometry {
 Sphere::Sphere(const glm::vec3& c, float r, const materials::Material* m)
     : GeometryObject(m), center(c), radius(r) {}
 
-std::optional<collisions::Intersection> Sphere::intersect(const collisions::Ray& ray) const {
+std::optional<collisions::Intersection> Sphere::intersect_impl(const collisions::Ray& ray) const {
     const auto origin = ray.get_origin();
     const auto direction = ray.get_direction();
     const auto r = center - origin;

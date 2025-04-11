@@ -11,12 +11,14 @@
 
 namespace raytracer::tests::camera {
 
+namespace {
 void require_vec_equal(const glm::vec3& vec1, const glm::vec3& vec2) {
     static constexpr auto MARGIN = 0.00001;
     REQUIRE_THAT(vec1.x, Catch::Matchers::WithinAbs(vec2.x, MARGIN));
     REQUIRE_THAT(vec1.y, Catch::Matchers::WithinAbs(vec2.y, MARGIN));
     REQUIRE_THAT(vec1.z, Catch::Matchers::WithinAbs(vec2.z, MARGIN));
 }
+} // namespace
 
 TEST_CASE("Default camera settings", "[camera]") {
     auto origin = glm::vec3(0, 0, 0);

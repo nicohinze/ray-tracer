@@ -23,7 +23,7 @@ glm::vec3 MovingSphere::get_center(float time) const {
     return center1 + ((time - time1) / (time2 - time1)) * (center2 - center1);
 }
 
-std::optional<collisions::Intersection> MovingSphere::intersect(const collisions::Ray& ray) const {
+std::optional<collisions::Intersection> MovingSphere::intersect_impl(const collisions::Ray& ray) const {
     const auto origin = ray.get_origin();
     const auto direction = ray.get_direction();
     const auto center = get_center(ray.get_time());

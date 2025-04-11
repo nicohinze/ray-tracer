@@ -23,7 +23,7 @@ class MovingSphere : public GeometryObject {
   public:
     MovingSphere(glm::vec3 c1, glm::vec3 c2, float r, float t1, float t2, const materials::Material* m);
     glm::vec3 get_center(float time) const;
-    std::optional<collisions::Intersection> intersect(const collisions::Ray& ray) const override;
+    std::optional<collisions::Intersection> intersect_impl(const collisions::Ray& ray) const override;
     collisions::AABB bounding_box(float t0, float t1) const override;
     std::pair<float, float> get_uv(const glm::vec3& p) const override;
 };

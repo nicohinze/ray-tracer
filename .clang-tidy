@@ -14,6 +14,7 @@ Checks: >
   -llvm-header-guard,
   -llvmlibc-callee-namespace,
   -llvmlibc-implementation-in-namespace,
+  -llvmlibc-inline-function-decl,
   -llvmlibc-restrict-system-libc-headers,
   -misc-no-recursion,
   -misc-non-private-member-variables-in-classes,
@@ -22,6 +23,7 @@ Checks: >
   -readability-avoid-nested-conditional-operator,
   -readability-function-cognitive-complexity,
   -readability-identifier-length,
+  -readability-math-missing-parentheses,
   -readability-uppercase-literal-suffix
 
 FormatStyle: file

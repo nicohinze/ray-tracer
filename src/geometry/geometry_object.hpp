@@ -11,9 +11,9 @@ class GeometryObject : public collisions::Hittable {
 
   public:
     explicit GeometryObject(const materials::Material* m);
-    GeometryObject(const GeometryObject& other) = default;
+    GeometryObject(const GeometryObject& other) = delete;
     GeometryObject(GeometryObject&& other) = delete;
-    GeometryObject& operator=(const GeometryObject& other) = default;
+    GeometryObject& operator=(const GeometryObject& other) = delete;
     GeometryObject& operator=(GeometryObject&& other) = delete;
     ~GeometryObject() override = default;
     virtual std::pair<float, float> get_uv(const glm::vec3& p) const = 0;

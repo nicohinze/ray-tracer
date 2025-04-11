@@ -5,6 +5,7 @@ set(SOURCE_FILES
     camera/camera.cpp
     collisions/aabb.cpp
     collisions/bvh_node.cpp
+    collisions/hittable.cpp
     collisions/intersection.cpp
     collisions/ray.cpp
     geometry/geometry_object.cpp
