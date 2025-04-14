@@ -28,6 +28,7 @@ Checks: >
 
 FormatStyle: file
 WarningsAsErrors: "*"
+ExcludePaths: "external/.*"
 
 CheckOptions:
   - key: readability-identifier-naming.ClassCase
