@@ -1,6 +1,5 @@
 #pragma once
 
-#include <atomic>
 #include <memory>
 #include <vector>
 
@@ -15,14 +14,13 @@ class BVHNode : public Hittable {
     std::shared_ptr<Hittable> left;
     std::shared_ptr<Hittable> right;
     AABB aabb;
-    static std::atomic<std::size_t> intersection_tests; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
   public:
     BVHNode(const std::vector<std::shared_ptr<Hittable>>& objects, float t0, float t1);
     BVHNode(const std::vector<std::shared_ptr<Hittable>>& objects, std::size_t start, std::size_t end, float t0, float t1);
-    std::optional<Intersection> intersect(const Ray& ray) const override;
+    std::optional<Intersection> intersect_impl(const Ray& ray) const override;
     AABB bounding_box(float t0, float t1) const override;
-    static std::size_t get_intersection_tests();
+    std::size_t get_intersection_tests() const;
 };
 
 } // namespace raytracer::collisions

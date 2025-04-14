@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <atomic>
 #include <cstddef>
 #include <memory>
 #include <optional>
@@ -10,11 +9,11 @@
 #include "collisions/hittable.hpp"
 #include "collisions/intersection.hpp"
 #include "collisions/ray.hpp"
-#include "geometry/geometry_object.hpp"
 #include "utils/utils.hpp"
 
 namespace raytracer::collisions {
 
+namespace {
 bool axis_compare(const std::shared_ptr<Hittable>& obj1, const std::shared_ptr<Hittable>& obj2, int axis) {
     auto bb1 = obj1->bounding_box(0, 0);
     auto bb2 = obj2->bounding_box(0, 0);
@@ -32,8 +31,7 @@ bool y_axis_compare(const std::shared_ptr<Hittable>& obj1, const std::shared_ptr
 bool z_axis_compare(const std::shared_ptr<Hittable>& obj1, const std::shared_ptr<Hittable>& obj2) {
     return axis_compare(obj1, obj2, 2);
 }
-
-std::atomic<std::size_t> BVHNode::intersection_tests = 0; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+} // namespace
 
 BVHNode::BVHNode(const std::vector<std::shared_ptr<Hittable>>& objects, float t0, float t1)
     : BVHNode(objects, 0, objects.size(), t0, t1) {
@@ -66,13 +64,10 @@ BVHNode::BVHNode(const std::vector<std::shared_ptr<Hittable>>& objects, std::siz
     aabb = surrounding_box(left_bb, right_bb);
 }
 
-std::optional<Intersection> BVHNode::intersect(const Ray& ray) const {
-    intersection_tests++;
+std::optional<Intersection> BVHNode::intersect_impl(const Ray& ray) const {
     if (aabb.intersect(ray)) {
         const auto left_intersect = left->intersect(ray);
         const auto right_intersect = right->intersect(ray);
-        intersection_tests += static_cast<int>(dynamic_cast<geometry::GeometryObject*>(left.get()) != nullptr);
-        intersection_tests += static_cast<int>(dynamic_cast<geometry::GeometryObject*>(right.get()) != nullptr);
         if (left_intersect.has_value() && right_intersect.has_value()) {
             return left_intersect->get_distance() <= right_intersect->get_distance() ? left_intersect : right_intersect;
         }
@@ -90,8 +85,8 @@ AABB BVHNode::bounding_box(float /*t0*/, float /*t1*/) const {
     return aabb;
 }
 
-std::size_t BVHNode::get_intersection_tests() {
-    return intersection_tests;
+std::size_t BVHNode::get_intersection_tests() const {
+    return intersection_tests + left->get_intersection_tests() + right->get_intersection_tests();
 }
 
 } // namespace raytracer::collisions

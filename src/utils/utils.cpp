@@ -18,11 +18,13 @@
 
 namespace raytracer::utils {
 
+namespace {
 std::size_t get_terminal_width() {
     struct winsize ws{};
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws); // NOLINT(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
     return ws.ws_col;
 }
+} // namespace
 
 void show_progress(std::size_t percent, std::size_t total_length) {
     // 1 space char + 1 [ char + 5 chars for percentage display + 1 ] char = 8 chars

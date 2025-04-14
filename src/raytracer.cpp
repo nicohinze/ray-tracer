@@ -74,7 +74,7 @@ void Raytracer::write_framebuffer(const std::string& filename) const {
     ofs.open(filename, std::ios_base::out | std::ios_base::trunc);
     ofs << "P6\n"
         << WIDTH << ' ' << HEIGHT << "\n255\n";
-    for (std::size_t i = 0; i < WIDTH * HEIGHT; ++i) {
+    for (auto i = 0u; i < WIDTH * HEIGHT; ++i) {
         for (auto j = 0; j < 3; ++j) {
             ofs << static_cast<unsigned char>(255 * std::max(0.0F, std::min(1.0F, std::sqrt(framebuffer[i][j]))));
         }
