@@ -13,7 +13,7 @@ option(RAY_TRACER_BUILD_CLANG_TIDY "Build with clang-tidy." OFF)
 option(RAY_TRACER_ENABLE_SANITIZER "Specify the enabled clang sanitizer")
 
 if(RAY_TRACER_BUILD_CLANG_TIDY)
-    set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-header-filter={src,tests}")
+    set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-header-filter=^(src|tests)/.*")
 endif()
 
 if(RAY_TRACER_ENABLE_SANITIZER STREQUAL "address")
