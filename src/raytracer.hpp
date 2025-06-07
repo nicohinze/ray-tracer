@@ -46,6 +46,7 @@ class Raytracer {
     void create_two_spheres_scene(std::size_t width, std::size_t height);
     void create_earth_scene(std::size_t width, std::size_t height);
     void create_noise_scene(std::size_t width, std::size_t height);
+    void create_quad_scene(std::size_t width, std::size_t height);
 
   public:
     Raytracer(std::size_t width, std::size_t height, std::size_t recursion_depth, std::size_t ray_per_pixel, bool show_progress);

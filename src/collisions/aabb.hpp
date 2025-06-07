@@ -11,6 +11,8 @@ class AABB {
     glm::vec3 min;
     glm::vec3 max;
 
+    void pad_to_min();
+
   public:
     AABB();
     AABB(const glm::vec3& min, const glm::vec3& max);

@@ -18,6 +18,7 @@
 #include "collisions/intersection.hpp"
 #include "collisions/ray.hpp"
 #include "geometry/moving_sphere.hpp"
+#include "geometry/quad.hpp"
 #include "geometry/sphere.hpp"
 #include "glm/fwd.hpp"
 #include "materials/checker_texture.hpp"
@@ -42,7 +43,8 @@ Raytracer::Raytracer(std::size_t width, std::size_t height, std::size_t recursio
     // create_complex_scene(width, height);
     // create_two_spheres_scene(width, height);
     // create_earth_scene(width, height);
-    create_noise_scene(width, height);
+    // create_noise_scene(width, height);
+    create_quad_scene(width, height);
 }
 
 void Raytracer::trace_rays() {
@@ -316,6 +318,38 @@ void Raytracer::create_noise_scene(std::size_t width, std::size_t height) {
     materials["noise"] = std::make_unique<materials::Lambertian>(std::move(noise_texture));
     auto geometry_objects = std::vector<std::shared_ptr<collisions::Hittable>>();
     geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(0, 0, 0), 2, materials["noise"].get()));
+    bvh_root = std::make_unique<collisions::BVHNode>(geometry_objects, 0.0, 1.0);
+}
+
+void Raytracer::create_quad_scene(std::size_t width, std::size_t height) {
+    const auto origin = glm::vec3(0, 0, 9);
+    const auto lookat = glm::vec3(0, 0, 0);
+    const auto vup = glm::vec3(0, 1, 0);
+    const auto vfov = 80.0f;
+    const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+    const auto aperture = 0.01f;
+    const auto focus_dist = 10.0f;
+    camera = camera::Camera(
+        origin,
+        lookat,
+        vup,
+        vfov,
+        aspect_ratio,
+        aperture,
+        focus_dist
+    );
+
+    materials["red"] = std::make_unique<materials::Lambertian>(glm::vec3(1.0, 0.2, 0.2));    // NOLINT(readability-magic-numbers)
+    materials["green"] = std::make_unique<materials::Lambertian>(glm::vec3(0.2, 1.0, 0.2));  // NOLINT(readability-magic-numbers)
+    materials["blue"] = std::make_unique<materials::Lambertian>(glm::vec3(0.2, 0.2, 1.0));   // NOLINT(readability-magic-numbers)
+    materials["orange"] = std::make_unique<materials::Lambertian>(glm::vec3(1.0, 0.5, 0.0)); // NOLINT(readability-magic-numbers)
+    materials["teal"] = std::make_unique<materials::Lambertian>(glm::vec3(0.2, 0.8, 0.8));   // NOLINT(readability-magic-numbers)
+    auto geometry_objects = std::vector<std::shared_ptr<collisions::Hittable>>();
+    geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(-3, -2, 5), glm::vec3(0, 0, -4), glm::vec3(0, 4, 0), materials["red"].get()));  // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(-2, -2, 0), glm::vec3(4, 0, 0), glm::vec3(0, 4, 0), materials["green"].get())); // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(3, -2, 1), glm::vec3(0, 0, 4), glm::vec3(0, 4, 0), materials["blue"].get()));   // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(-2, 3, 1), glm::vec3(4, 0, 0), glm::vec3(0, 0, 4), materials["orange"].get())); // NOLINT(readability-magic-numbers)
+    geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(-2, -3, 5), glm::vec3(4, 0, 0), glm::vec3(0, 0, -4), materials["teal"].get())); // NOLINT(readability-magic-numbers)
     bvh_root = std::make_unique<collisions::BVHNode>(geometry_objects, 0.0, 1.0);
 }
 

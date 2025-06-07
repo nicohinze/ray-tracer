@@ -1,0 +1,27 @@
+#pragma once
+
+#include "collisions/aabb.hpp"
+#include "geometry/geometry_object.hpp"
+#include "glm/fwd.hpp"
+#include "materials/material.hpp"
+
+namespace raytracer::geometry {
+
+class Quad : public GeometryObject {
+  private:
+    glm::vec3 corner;
+    glm::vec3 u;
+    glm::vec3 v;
+    glm::vec3 n;
+    glm::vec3 w;
+    float d;
+    collisions::AABB aabb;
+
+  public:
+    Quad(const glm::vec3& p, const glm::vec3& u, const glm::vec3& v, const materials::Material* m);
+    std::optional<collisions::Intersection> intersect_impl(const collisions::Ray& ray) const override;
+    collisions::AABB bounding_box(float t0, float t1) const override;
+    std::pair<float, float> get_uv(const glm::vec3& p) const override;
+};
+
+} // namespace raytracer::geometry
