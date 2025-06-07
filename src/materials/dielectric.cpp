@@ -17,7 +17,7 @@ Dielectric::Dielectric(float r)
 float Dielectric::schlick_approx(float cosine) const {
     auto r0 = (1 - refractive_index) / (1 + refractive_index);
     r0 *= r0;
-    return r0 + (1 - r0) * std::pow(1 - cosine, 5.0F); // NOLINT(readability-magic-numbers)
+    return r0 + (1 - r0) * std::pow(1 - cosine, 5.0F);
 }
 
 std::pair<glm::vec3, collisions::Ray> Dielectric::scatter(const collisions::Ray& ray, const glm::vec3& pos, const glm::vec3& n, float /*u*/, float /*v*/) const {

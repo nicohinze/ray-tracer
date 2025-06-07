@@ -1,10 +1,13 @@
 #include <algorithm>
 #include <cmath>
 #include <optional>
+#include <utility>
 
 #include "collisions/aabb.hpp"
 #include "collisions/intersection.hpp"
+#include "collisions/ray.hpp"
 #include "geometry/quad.hpp"
+#include "geometry_object.hpp"
 #include "glm/fwd.hpp"
 #include "glm/geometric.hpp"
 #include "materials/material.hpp"
@@ -12,7 +15,13 @@
 namespace raytracer::geometry {
 
 Quad::Quad(const glm::vec3& p, const glm::vec3& u, const glm::vec3& v, const materials::Material* m)
-    : GeometryObject(m), corner(p), u(u), v(v) {
+    : GeometryObject(m)
+    , corner(p)
+    , u(u)
+    , v(v)
+    , n(glm::normalize(glm::cross(u, v)))
+    , w(n / glm::dot(n, n))
+    , d(glm::dot(n, corner)) {
     const auto q = p + u;
     const auto r = p + v;
     const auto s = p + u + v;
@@ -25,9 +34,6 @@ Quad::Quad(const glm::vec3& p, const glm::vec3& u, const glm::vec3& v, const mat
     max.y = std::max({p.y, q.y, r.y, s.y});
     max.z = std::max({p.z, q.z, r.z, s.z});
     aabb = collisions::AABB(min, max);
-    n = glm::normalize(glm::cross(u, v));
-    w = n / glm::dot(n, n);
-    d = glm::dot(n, corner);
 }
 
 std::optional<collisions::Intersection> Quad::intersect_impl(const collisions::Ray& ray) const {

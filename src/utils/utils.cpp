@@ -42,7 +42,7 @@ void show_progress(std::size_t percent, std::size_t total_length) {
         std::cout << ']';
     }
     // 1 space char + 3 digits + 1 % char = 5 chars
-    if (total_length >= 5) { // NOLINT(readability-magic-numbers)
+    if (total_length >= 5) {
         std::cout << ' ' << std::setfill('0') << std::setw(3) << percent << '%';
     }
     std::cout << std::flush << '\r';
