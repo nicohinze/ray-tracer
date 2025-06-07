@@ -16,7 +16,7 @@ Camera::Camera() // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-i
     , w(glm::vec3(0, 0, 1))
     , lens_radius(0) {
     auto viewport_height = 2.0F;
-    auto viewport_width = 4.0F / 3.0F * viewport_height; // NOLINT(readability-magic-numbers)
+    auto viewport_width = 4.0F / 3.0F * viewport_height;
     horizontal = glm::vec3(viewport_width, 0, 0);
     vertical = glm::vec3(0, viewport_height, 0);
     lower_left = glm::vec3(-viewport_width / 2.0F, -viewport_height / 2.0F, -1);
@@ -27,7 +27,7 @@ Camera::Camera(const glm::vec3& o, const glm::vec3& lookat, const glm::vec3& vup
     , lens_radius(aperture / 2.0F)
     , time1(t1)
     , time2(t2) {
-    auto theta = static_cast<float>(std::numbers::pi) / 180.0F * vfov; // NOLINT(readability-magic-numbers)
+    auto theta = static_cast<float>(std::numbers::pi) / 180.0F * vfov;
     auto h = std::tan(theta / 2.0F);
     auto viewport_height = 2.0F * h;
     auto viewport_width = aspect_ratio * viewport_height;

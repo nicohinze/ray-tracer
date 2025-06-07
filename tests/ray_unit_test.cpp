@@ -41,20 +41,20 @@ TEST_CASE("Ray refraction", "[ray]") {
 
     ray = raytracer::collisions::Ray(glm::vec3(0, 0, 0), glm::vec3(1, 1, 0));
     n = glm::vec3(-1, 0, 0);
-    expected = glm::vec3(1, 2.0 / 3.0, 0); // NOLINT(readability-magic-numbers)
-    refract = ray.refract(n, 1.5);         // NOLINT(readability-magic-numbers)
+    expected = glm::vec3(1, 2.0 / 3.0, 0);
+    refract = ray.refract(n, 1.5);
     REQUIRE(refract == expected);
 
     ray = raytracer::collisions::Ray(glm::vec3(0, 0, 0), glm::vec3(1, 1, 0));
     n = glm::vec3(1, 0, 0);
-    expected = glm::vec3(1, 1.5, 0); // NOLINT(readability-magic-numbers)
-    refract = ray.refract(n, 1.5);   // NOLINT(readability-magic-numbers)
+    expected = glm::vec3(1, 1.5, 0);
+    refract = ray.refract(n, 1.5);
     REQUIRE(refract == expected);
 
-    ray = raytracer::collisions::Ray(glm::vec3(0, 0, 0), glm::vec3(1, 0.1, 0)); // NOLINT(readability-magic-numbers)
+    ray = raytracer::collisions::Ray(glm::vec3(0, 0, 0), glm::vec3(1, 0.1, 0));
     n = glm::vec3(0, 1, 0);
-    expected = glm::vec3(1, -0.1, 0); // NOLINT(readability-magic-numbers)
-    refract = ray.refract(n, 1.5);    // NOLINT(readability-magic-numbers)
+    expected = glm::vec3(1, -0.1, 0);
+    refract = ray.refract(n, 1.5);
     REQUIRE(refract == expected);
 }
 

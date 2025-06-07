@@ -26,7 +26,7 @@ TEST_CASE("Ray-sphere intersection", "[sphere]") {
     // NOLINTBEGIN(bugprone-unchecked-optional-access)
     auto sphere1 = raytracer::geometry::Sphere(glm::vec3(0, 0, 0), 1, nullptr);
     auto ray1 = collisions::Ray(glm::vec3(0, 1, 1), glm::vec3(0, 0, -1));
-    auto expected1 = collisions::Intersection(1.0, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), nullptr, 0.25, 1); // NOLINT(readability-magic-numbers)
+    auto expected1 = collisions::Intersection(1.0, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), nullptr, 0.25, 1);
     auto intersec1 = sphere1.intersect(ray1);
     REQUIRE(intersec1.has_value());
     REQUIRE_THAT(intersec1->get_distance(), Catch::Matchers::WithinAbs(expected1.get_distance(), MARGIN));
