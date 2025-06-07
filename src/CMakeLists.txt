@@ -10,6 +10,7 @@ set(SOURCE_FILES
     collisions/ray.cpp
     geometry/geometry_object.cpp
     geometry/moving_sphere.cpp
+    geometry/quad.cpp
     geometry/sphere.cpp
     lighting/light.cpp
     materials/checker_texture.cpp

@@ -8,9 +8,12 @@ namespace raytracer::collisions {
 
 AABB::AABB()
     : min(glm::vec3(0, 0, 0)), max(glm::vec3(0, 0, 0)) {
+    pad_to_min();
 }
 AABB::AABB(const glm::vec3& min, const glm::vec3& max)
-    : min(min), max(max) {}
+    : min(min), max(max) {
+    pad_to_min();
+}
 
 bool AABB::intersect(const Ray& ray) const {
     float t_min = 0;
@@ -51,6 +54,23 @@ AABB surrounding_box(const AABB& aabb0, const AABB& aabb1) {
         std::max(aabb0.get_max().z, aabb1.get_max().z)
     );
     return {p0, p1};
+}
+
+void AABB::pad_to_min() {
+    const auto delta = 0.0001f;
+    const auto padding = delta / 2;
+    if (max.x - min.x < delta) {
+        min.x -= padding;
+        max.x += padding;
+    }
+    if (max.y - min.y < delta) {
+        min.y -= padding;
+        max.y += padding;
+    }
+    if (max.z - min.z < delta) {
+        min.z -= padding;
+        max.z += padding;
+    }
 }
 
 } // namespace raytracer::collisions
