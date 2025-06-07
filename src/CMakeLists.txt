@@ -17,7 +17,9 @@ set(SOURCE_FILES
     materials/image_texture.cpp
     materials/lambertian.cpp
     materials/metal.cpp
+    materials/noise_texture.cpp
     materials/solid_color.cpp
+    noise/perlin.cpp
     raytracer.cpp
     utils/utils.cpp
 )
