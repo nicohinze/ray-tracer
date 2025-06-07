@@ -25,6 +25,7 @@
 #include "materials/image_texture.hpp"
 #include "materials/lambertian.hpp"
 #include "materials/metal.hpp"
+#include "materials/noise_texture.hpp"
 #include "raytracer.hpp"
 #include "utils/utils.hpp"
 
@@ -36,11 +37,12 @@ Raytracer::Raytracer(std::size_t width, std::size_t height, std::size_t recursio
     , MAX_RECURSION_DEPTH(recursion_depth)
     , RAYS_PER_PIXEL(ray_per_pixel)
     , show_progress(show_progress) {
-    framebuffer.reserve(width * height);
+    framebuffer.resize(width * height);
     // create_simple_scene(width, height);
     // create_complex_scene(width, height);
     // create_two_spheres_scene(width, height);
-    create_earth_scene(width, height);
+    // create_earth_scene(width, height);
+    create_noise_scene(width, height);
 }
 
 void Raytracer::trace_rays() {
@@ -287,6 +289,33 @@ void Raytracer::create_earth_scene(std::size_t width, std::size_t height) {
     }
     auto geometry_objects = std::vector<std::shared_ptr<collisions::Hittable>>();
     geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(0, 0, 0), 2, materials["earth"].get()));
+    bvh_root = std::make_unique<collisions::BVHNode>(geometry_objects, 0.0, 1.0);
+}
+
+void Raytracer::create_noise_scene(std::size_t width, std::size_t height) {
+    const auto origin = glm::vec3(13, 2, 3); // NOLINT(readability-magic-numbers)
+    const auto lookat = glm::vec3(0, 0, 0);
+    const auto vup = glm::vec3(0, 1, 0);
+    const auto vfov = 20.0F; // NOLINT(readability-magic-numbers)
+    const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+    const auto aperture = 0.1F;    // NOLINT(readability-magic-numbers)
+    const auto focus_dist = 10.0F; // NOLINT(readability-magic-numbers)
+    camera = camera::Camera(
+        origin,
+        lookat,
+        vup,
+        vfov,
+        aspect_ratio,
+        aperture,
+        focus_dist,
+        0.0,
+        1.0
+    );
+
+    auto noise_texture = std::make_unique<materials::NoiseTexture>(4);
+    materials["noise"] = std::make_unique<materials::Lambertian>(std::move(noise_texture));
+    auto geometry_objects = std::vector<std::shared_ptr<collisions::Hittable>>();
+    geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(0, 0, 0), 2, materials["noise"].get()));
     bvh_root = std::make_unique<collisions::BVHNode>(geometry_objects, 0.0, 1.0);
 }
 
