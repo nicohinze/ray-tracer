@@ -1,0 +1,32 @@
+name: C++ CI
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  clang-tidy-check:
+    name: clang-tidy
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang++ clang-tidy cmake ninja-build
+    - name: Configure with clang-tidy
+      run: |
+        cmake -S . -B build \
+          -G Ninja \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DRAY_TRACER_BUILD_CLANG_TIDY=ON
+    - name: Run clang-tidy
+      run: cmake --build build
