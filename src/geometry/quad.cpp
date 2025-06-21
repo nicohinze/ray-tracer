@@ -3,13 +3,14 @@
 #include <optional>
 #include <utility>
 
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
+
 #include "collisions/aabb.hpp"
 #include "collisions/intersection.hpp"
 #include "collisions/ray.hpp"
 #include "geometry/quad.hpp"
 #include "geometry_object.hpp"
-#include "glm/fwd.hpp"
-#include "glm/geometric.hpp"
 #include "materials/material.hpp"
 
 namespace raytracer::geometry {

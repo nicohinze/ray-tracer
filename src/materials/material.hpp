@@ -17,6 +17,7 @@ class Material {
     Material& operator=(Material&&) = delete;
     virtual ~Material() = default;
     virtual std::pair<glm::vec3, collisions::Ray> scatter(const collisions::Ray& ray, const glm::vec3& pos, const glm::vec3& n, float u, float v) const = 0;
+    virtual glm::vec3 emit(float u, float v, const glm::vec3& p) const;
 
   protected:
     static constexpr auto OFFSET = 1e-3F;

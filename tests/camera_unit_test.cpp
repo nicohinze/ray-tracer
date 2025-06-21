@@ -37,6 +37,7 @@ TEST_CASE("Custom camera settings without defocus blur", "[camera]") {
     auto origin = glm::vec3(0, static_cast<float>(std::numbers::pi) / 4.0F, -static_cast<float>(std::numbers::pi) / 4.0F);
     auto lookto = glm::vec3(0, -1, -1);
     auto vup = glm::vec3(0, 1, 0);
+    auto bg = glm::vec3(0, 0, 0);
     auto vfov = 90.0F;
     auto aspect_ratio = 4.0F / 3.0F;
     auto aperture = 0.0F;
@@ -45,6 +46,7 @@ TEST_CASE("Custom camera settings without defocus blur", "[camera]") {
         origin,
         origin + lookto,
         vup,
+        bg,
         vfov,
         aspect_ratio,
         aperture,

@@ -1,6 +1,7 @@
 #include <cmath>
 
-#include "glm/fwd.hpp"
+#include <glm/fwd.hpp>
+
 #include "noise_texture.hpp"
 
 namespace raytracer::materials {

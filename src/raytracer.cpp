@@ -13,6 +13,8 @@
 #include <utility>
 #include <vector>
 
+#include <glm/fwd.hpp>
+
 #include "collisions/bvh_node.hpp"
 #include "collisions/hittable.hpp"
 #include "collisions/intersection.hpp"
@@ -20,9 +22,9 @@
 #include "geometry/moving_sphere.hpp"
 #include "geometry/quad.hpp"
 #include "geometry/sphere.hpp"
-#include "glm/fwd.hpp"
 #include "materials/checker_texture.hpp"
 #include "materials/dielectric.hpp"
+#include "materials/diffuse_light.hpp"
 #include "materials/image_texture.hpp"
 #include "materials/lambertian.hpp"
 #include "materials/metal.hpp"
@@ -44,7 +46,8 @@ Raytracer::Raytracer(std::size_t width, std::size_t height, std::size_t recursio
     // create_two_spheres_scene(width, height);
     // create_earth_scene(width, height);
     // create_noise_scene(width, height);
-    create_quad_scene(width, height);
+    // create_quad_scene(width, height);
+    create_light_scene(width, height);
 }
 
 void Raytracer::trace_rays() {
@@ -123,8 +126,6 @@ void Raytracer::render_lines(std::size_t offset, std::size_t stride) {
 }
 
 glm::vec3 Raytracer::cast_ray(const collisions::Ray& ray, std::size_t recursion_depth) {
-    static constexpr auto WHITE = glm::vec3(1.0, 1.0, 1.0);
-    static constexpr auto LIGHT_BLUE = glm::vec3(0.5, 0.7, 1.0);
     if (recursion_depth > MAX_RECURSION_DEPTH) {
         return {0, 0, 0};
     }
@@ -133,8 +134,7 @@ glm::vec3 Raytracer::cast_ray(const collisions::Ray& ray, std::size_t recursion_
     if (closest_intersect) {
         return calculate_lighting(ray, closest_intersect.value(), recursion_depth);
     }
-    const float t = 0.5F * (ray.get_direction().y + 1.0F);
-    return (1.0F - t) * WHITE + t * LIGHT_BLUE;
+    return camera.get_bg();
 }
 
 std::optional<collisions::Intersection> Raytracer::get_closest_intersection(const collisions::Ray& ray) {
@@ -144,7 +144,9 @@ std::optional<collisions::Intersection> Raytracer::get_closest_intersection(cons
 glm::vec3 Raytracer::calculate_lighting(const collisions::Ray& ray, const collisions::Intersection& intersect, std::size_t recursion_depth) {
     if (intersect.get_material() != nullptr) {
         const auto [color, scattered] = intersect.get_material()->scatter(ray, intersect.get_position(), intersect.get_normal(), intersect.get_u(), intersect.get_v());
-        return color * cast_ray(scattered, recursion_depth + 1);
+        const auto scatter_color = color * cast_ray(scattered, recursion_depth + 1);
+        const auto emission_color = intersect.get_material()->emit(intersect.get_u(), intersect.get_v(), intersect.get_position());
+        return scatter_color + emission_color;
     }
     return intersect.get_normal();
 }
@@ -153,6 +155,7 @@ void Raytracer::create_simple_scene(std::size_t width, std::size_t height) {
     const auto origin = glm::vec3(0, 0, 0);
     const auto lookto = glm::vec3(0, 0, -1);
     const auto vup = glm::vec3(0, 1, 0);
+    const auto bg = glm::vec3(0.7, 0.8, 1);
     const auto vfov = 90.0F;
     const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
     const auto aperture = 0.75F;
@@ -161,6 +164,7 @@ void Raytracer::create_simple_scene(std::size_t width, std::size_t height) {
         origin,
         origin + lookto,
         vup,
+        bg,
         vfov,
         aspect_ratio,
         aperture,
@@ -184,6 +188,7 @@ void Raytracer::create_complex_scene(std::size_t width, std::size_t height) {
     const auto origin = glm::vec3(13, 2, 3);
     const auto lookat = glm::vec3(0, 0, 0);
     const auto vup = glm::vec3(0, 1, 0);
+    const auto bg = glm::vec3(0.7, 0.8, 1);
     const auto vfov = 20.0F;
     const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
     const auto aperture = 0.1F;
@@ -192,6 +197,7 @@ void Raytracer::create_complex_scene(std::size_t width, std::size_t height) {
         origin,
         lookat,
         vup,
+        bg,
         vfov,
         aspect_ratio,
         aperture,
@@ -241,6 +247,7 @@ void Raytracer::create_two_spheres_scene(std::size_t width, std::size_t height) 
     const auto origin = glm::vec3(13, 2, 3);
     const auto lookat = glm::vec3(0, 0, 0);
     const auto vup = glm::vec3(0, 1, 0);
+    const auto bg = glm::vec3(0.7, 0.8, 1);
     const auto vfov = 20.0F;
     const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
     const auto aperture = 0.1F;
@@ -249,6 +256,7 @@ void Raytracer::create_two_spheres_scene(std::size_t width, std::size_t height) 
         origin,
         lookat,
         vup,
+        bg,
         vfov,
         aspect_ratio,
         aperture,
@@ -269,6 +277,7 @@ void Raytracer::create_earth_scene(std::size_t width, std::size_t height) {
     const auto origin = glm::vec3(13, 2, 3);
     const auto lookat = glm::vec3(0, 0, 0);
     const auto vup = glm::vec3(0, 1, 0);
+    const auto bg = glm::vec3(0.7, 0.8, 1);
     const auto vfov = 20.0F;
     const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
     const auto aperture = 0.1F;
@@ -277,6 +286,7 @@ void Raytracer::create_earth_scene(std::size_t width, std::size_t height) {
         origin,
         lookat,
         vup,
+        bg,
         vfov,
         aspect_ratio,
         aperture,
@@ -298,6 +308,7 @@ void Raytracer::create_noise_scene(std::size_t width, std::size_t height) {
     const auto origin = glm::vec3(13, 2, 3);
     const auto lookat = glm::vec3(0, 0, 0);
     const auto vup = glm::vec3(0, 1, 0);
+    const auto bg = glm::vec3(0.7, 0.8, 1);
     const auto vfov = 20.0F;
     const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
     const auto aperture = 0.1F;
@@ -306,6 +317,7 @@ void Raytracer::create_noise_scene(std::size_t width, std::size_t height) {
         origin,
         lookat,
         vup,
+        bg,
         vfov,
         aspect_ratio,
         aperture,
@@ -325,6 +337,7 @@ void Raytracer::create_quad_scene(std::size_t width, std::size_t height) {
     const auto origin = glm::vec3(0, 0, 9);
     const auto lookat = glm::vec3(0, 0, 0);
     const auto vup = glm::vec3(0, 1, 0);
+    const auto bg = glm::vec3(0.7, 0.8, 1);
     const auto vfov = 80.0f;
     const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
     const auto aperture = 0.01f;
@@ -333,6 +346,7 @@ void Raytracer::create_quad_scene(std::size_t width, std::size_t height) {
         origin,
         lookat,
         vup,
+        bg,
         vfov,
         aspect_ratio,
         aperture,
@@ -350,6 +364,37 @@ void Raytracer::create_quad_scene(std::size_t width, std::size_t height) {
     geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(3, -2, 1), glm::vec3(0, 0, 4), glm::vec3(0, 4, 0), materials["blue"].get()));
     geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(-2, 3, 1), glm::vec3(4, 0, 0), glm::vec3(0, 0, 4), materials["orange"].get()));
     geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(-2, -3, 5), glm::vec3(4, 0, 0), glm::vec3(0, 0, -4), materials["teal"].get()));
+    bvh_root = std::make_unique<collisions::BVHNode>(geometry_objects, 0.0, 1.0);
+}
+
+void Raytracer::create_light_scene(std::size_t width, std::size_t height) {
+    const auto origin = glm::vec3(26, 3, 6);
+    const auto lookat = glm::vec3(0, 2, 0);
+    const auto vup = glm::vec3(0, 1, 0);
+    const auto bg = glm::vec3(0, 0, 0);
+    const auto vfov = 20.0f;
+    const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+    const auto aperture = 0.01f;
+    const auto focus_dist = 10.0f;
+    camera = camera::Camera(
+        origin,
+        lookat,
+        vup,
+        bg,
+        vfov,
+        aspect_ratio,
+        aperture,
+        focus_dist
+    );
+
+    auto noise_texture = std::make_unique<materials::NoiseTexture>(4);
+    materials["noise"] = std::make_unique<materials::Lambertian>(std::move(noise_texture));
+    materials["light"] = std::make_unique<materials::DiffuseLight>(glm::vec3(4, 4, 4));
+    auto geometry_objects = std::vector<std::shared_ptr<collisions::Hittable>>();
+    geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(0, -1000, 0), 1000, materials["noise"].get()));
+    geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(0, 2, 0), 2, materials["noise"].get()));
+    geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(3, 1, -2), glm::vec3(2, 0, 0), glm::vec3(0, 2, 0), materials["light"].get()));
+    geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(0, 7, 0), 2, materials["light"].get()));
     bvh_root = std::make_unique<collisions::BVHNode>(geometry_objects, 0.0, 1.0);
 }
 

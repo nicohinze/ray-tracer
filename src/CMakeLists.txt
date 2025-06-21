@@ -15,8 +15,10 @@ set(SOURCE_FILES
     lighting/light.cpp
     materials/checker_texture.cpp
     materials/dielectric.cpp
+    materials/diffuse_light.cpp
     materials/image_texture.cpp
     materials/lambertian.cpp
+    materials/material.cpp
     materials/metal.cpp
     materials/noise_texture.cpp
     materials/solid_color.cpp

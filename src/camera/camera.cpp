@@ -14,6 +14,7 @@ Camera::Camera() // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-i
     , u(glm::vec3(1, 0, 0))
     , v(glm::vec3(0, 1, 0))
     , w(glm::vec3(0, 0, 1))
+    , bg({})
     , lens_radius(0) {
     auto viewport_height = 2.0F;
     auto viewport_width = 4.0F / 3.0F * viewport_height;
@@ -22,8 +23,9 @@ Camera::Camera() // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-i
     lower_left = glm::vec3(-viewport_width / 2.0F, -viewport_height / 2.0F, -1);
 }
 
-Camera::Camera(const glm::vec3& o, const glm::vec3& lookat, const glm::vec3& vup, float vfov, float aspect_ratio, float aperture, float focus_dist, float t1, float t2) // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
+Camera::Camera(const glm::vec3& o, const glm::vec3& lookat, const glm::vec3& vup, const glm::vec3& bg, float vfov, float aspect_ratio, float aperture, float focus_dist, float t1, float t2) // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
     : origin(o)
+    , bg(bg)
     , lens_radius(aperture / 2.0F)
     , time1(t1)
     , time2(t2) {
@@ -43,6 +45,10 @@ collisions::Ray Camera::get_ray(float x, float y) const {
     auto rng = lens_radius * utils::random_in_unit_disk();
     auto offset = u * rng.x + v * rng.y;
     return {origin + offset, glm::normalize(lower_left + x * horizontal + y * vertical - origin - offset), utils::random_float(time1, time2)};
+}
+
+glm::vec3 Camera::get_bg() const {
+    return bg;
 }
 
 } // namespace raytracer::camera

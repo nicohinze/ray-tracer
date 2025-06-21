@@ -1,8 +1,9 @@
 #pragma once
 
+#include <glm/fwd.hpp>
+
 #include "collisions/aabb.hpp"
 #include "geometry/geometry_object.hpp"
-#include "glm/fwd.hpp"
 #include "materials/material.hpp"
 
 namespace raytracer::geometry {
