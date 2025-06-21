@@ -13,7 +13,7 @@ class NoiseTexture : public Texture {
     float scale;
 
   public:
-    NoiseTexture(float scale);
+    explicit NoiseTexture(float scale);
     glm::vec3 value(float u, float v, const glm::vec3& p) const override;
 };
 

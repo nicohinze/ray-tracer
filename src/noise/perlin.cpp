@@ -1,8 +1,9 @@
 #include <array>
 #include <cmath>
 
-#include "glm/fwd.hpp"
-#include "glm/geometric.hpp"
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
+
 #include "perlin.hpp"
 #include "utils/utils.hpp"
 

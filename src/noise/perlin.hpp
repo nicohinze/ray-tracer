@@ -4,7 +4,8 @@
 #include <cstddef>
 #include <utility>
 
-#include "glm/fwd.hpp"
+#include <glm/fwd.hpp>
+
 #include "utils/utils.hpp"
 
 namespace raytracer::noise {
