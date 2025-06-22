@@ -50,9 +50,8 @@ if(RAY_TRACER_BUILD_TESTS AND RAY_TRACER_BUILD_COVERAGE)
     add_custom_target(
         coverage_report
         COMMENT "Generating coverage report"
-        COMMAND lcov --capture --directory . --output-file coverage.info --rc lcov_branch_coverage=1
-        COMMAND lcov --extract coverage.info "*/${CMAKE_PROJECT_NAME}/src/*" --output-file coverage.info.filtered --rc
-                lcov_branch_coverage=1
+        COMMAND lcov --capture --directory . --output-file coverage.info --rc branch_coverage=1 --ignore-errors mismatch,inconsistent
+        COMMAND lcov --extract coverage.info "*/${CMAKE_PROJECT_NAME}/src/*" --output-file coverage.info.filtered --rc branch_coverage=1
         COMMAND genhtml --title "${CMAKE_PROJECT_NAME}" --legend --demangle-cpp --output-directory coverage_report
                 --show-details --branch-coverage coverage.info.filtered
     )
