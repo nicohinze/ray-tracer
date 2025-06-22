@@ -26,10 +26,13 @@ jobs:
       run: |
         cmake -S . -B build \
           -G Ninja \
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE \
           -DCMAKE_BUILD_TYPE=Debug \
           -DRAY_TRACER_BUILD_CLANG_TIDY=ON
-    - name: Run clang-tidy
+    - name: Build with clang-tidy
       run: cmake --build build
+    - name: Run clang-tidy
+      run: find src tests -name '*.cpp' -o -name '*.hpp' | xargs -P $(nproc) -n 1 clang-tidy-19 -p build -header-filter='^(src|tests)/.*'
 
   coverage-report:
     name: Coverage report
