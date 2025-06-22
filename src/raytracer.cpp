@@ -47,7 +47,8 @@ Raytracer::Raytracer(std::size_t width, std::size_t height, std::size_t recursio
     // create_earth_scene(width, height);
     // create_noise_scene(width, height);
     // create_quad_scene(width, height);
-    create_light_scene(width, height);
+    // create_light_scene(width, height);
+    create_cornell_box_scene(width, height);
 }
 
 void Raytracer::trace_rays() {
@@ -395,6 +396,40 @@ void Raytracer::create_light_scene(std::size_t width, std::size_t height) {
     geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(0, 2, 0), 2, materials["noise"].get()));
     geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(3, 1, -2), glm::vec3(2, 0, 0), glm::vec3(0, 2, 0), materials["light"].get()));
     geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(0, 7, 0), 2, materials["light"].get()));
+    bvh_root = std::make_unique<collisions::BVHNode>(geometry_objects, 0.0, 1.0);
+}
+
+void Raytracer::create_cornell_box_scene(std::size_t width, std::size_t height) {
+    const auto origin = glm::vec3(278, 278, -800);
+    const auto lookat = glm::vec3(278, 278, 0);
+    const auto vup = glm::vec3(0, 1, 0);
+    const auto bg = glm::vec3(0, 0, 0);
+    const auto vfov = 40.0f;
+    const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+    const auto aperture = 0.01f;
+    const auto focus_dist = 10.0f;
+    camera = camera::Camera(
+        origin,
+        lookat,
+        vup,
+        bg,
+        vfov,
+        aspect_ratio,
+        aperture,
+        focus_dist
+    );
+
+    materials["red"] = std::make_unique<materials::Lambertian>(glm::vec3(0.65, 0.05, 0.05));
+    materials["white"] = std::make_unique<materials::Lambertian>(glm::vec3(0.73, 0.73, 0.73));
+    materials["green"] = std::make_unique<materials::Lambertian>(glm::vec3(0.12, 0.45, 0.15));
+    materials["light"] = std::make_unique<materials::DiffuseLight>(glm::vec3(15, 15, 15));
+    auto geometry_objects = std::vector<std::shared_ptr<collisions::Hittable>>();
+    geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(555, 0, 0), glm::vec3(0, 555, 0), glm::vec3(0, 0, 555), materials["green"].get()));
+    geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(0, 0, 0), glm::vec3(0, 555, 0), glm::vec3(0, 0, 555), materials["red"].get()));
+    geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(343, 554, 332), glm::vec3(-130, 0, 0), glm::vec3(0, 0, -105), materials["light"].get()));
+    geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(0, 0, 0), glm::vec3(555, 0, 0), glm::vec3(0, 0, 555), materials["white"].get()));
+    geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(555, 555, 555), glm::vec3(-555, 0, 0), glm::vec3(0, 0, -555), materials["white"].get()));
+    geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(0, 0, 555), glm::vec3(555, 0, 0), glm::vec3(0, 555, 0), materials["white"].get()));
     bvh_root = std::make_unique<collisions::BVHNode>(geometry_objects, 0.0, 1.0);
 }
 
