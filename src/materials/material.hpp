@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include <glm/glm.hpp>
+#include <glm/ext/vector_float3.hpp>
 
 #include "collisions/ray.hpp"
 

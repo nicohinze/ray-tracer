@@ -1,8 +1,10 @@
 #pragma once
+
+#include <cstddef>
 #include <filesystem>
 #include <optional>
 
-#include <glm/glm.hpp>
+#include <glm/ext/vector_float3.hpp>
 
 namespace raytracer::utils {
 

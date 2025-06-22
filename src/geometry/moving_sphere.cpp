@@ -4,7 +4,7 @@
 #include <utility>
 
 #include <glm/exponential.hpp>
-#include <glm/fwd.hpp>
+#include <glm/ext/vector_float3.hpp>
 #include <glm/geometric.hpp>
 
 #include "collisions/aabb.hpp"

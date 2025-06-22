@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-#include <glm/fwd.hpp>
+#include <glm/ext/vector_float3.hpp>
 
 #include "collisions/bvh_node.hpp"
 #include "collisions/hittable.hpp"

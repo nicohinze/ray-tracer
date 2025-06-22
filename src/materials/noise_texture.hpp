@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm/fwd.hpp>
+#include <glm/ext/vector_float3.hpp>
 
 #include "noise/perlin.hpp"
 #include "texture.hpp"

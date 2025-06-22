@@ -1,5 +1,10 @@
 #pragma once
 
+#include <utility>
+
+#include <glm/ext/vector_float3.hpp>
+
+#include "collisions/ray.hpp"
 #include "materials/material.hpp"
 
 namespace raytracer::materials {

@@ -1,8 +1,9 @@
 #pragma once
 
 #include <optional>
+#include <utility>
 
-#include <glm/glm.hpp>
+#include <glm/ext/vector_float3.hpp>
 
 #include "collisions/aabb.hpp"
 #include "collisions/intersection.hpp"

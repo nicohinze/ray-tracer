@@ -1,7 +1,11 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 
+#include <glm/ext/vector_float3.hpp>
+
+#include "collisions/ray.hpp"
 #include "materials/material.hpp"
 #include "materials/texture.hpp"
 

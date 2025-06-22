@@ -2,16 +2,19 @@
 
 #include <atomic>
 #include <condition_variable>
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <glm/fwd.hpp>
+#include <glm/ext/vector_float3.hpp>
 
 #include "camera/camera.hpp"
 #include "collisions/bvh_node.hpp"
+#include "collisions/intersection.hpp"
 #include "collisions/ray.hpp"
 #include "lighting/light.hpp"
 #include "materials/material.hpp"

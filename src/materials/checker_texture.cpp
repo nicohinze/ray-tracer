@@ -2,7 +2,7 @@
 #include <memory>
 #include <utility>
 
-#include <glm/fwd.hpp>
+#include <glm/ext/vector_float3.hpp>
 
 #include "materials/checker_texture.hpp"
 #include "materials/solid_color.hpp"
