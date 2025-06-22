@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <vector>
 
-#include <glm/fwd.hpp>
+#include <glm/ext/vector_float3.hpp>
 #include <glm/geometric.hpp>
 
 #include "utils.hpp"

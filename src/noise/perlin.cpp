@@ -1,7 +1,7 @@
 #include <array>
 #include <cmath>
 
-#include <glm/fwd.hpp>
+#include <glm/ext/vector_float3.hpp>
 #include <glm/geometric.hpp>
 
 #include "perlin.hpp"

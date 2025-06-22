@@ -1,6 +1,6 @@
 #include <string>
 
-#include <glm/fwd.hpp>
+#include <glm/ext/vector_float3.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 

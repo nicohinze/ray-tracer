@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include <glm/fwd.hpp>
+#include <glm/ext/vector_float3.hpp>
 
 #include "noise_texture.hpp"
 

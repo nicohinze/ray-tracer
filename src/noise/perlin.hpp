@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <utility>
 
-#include <glm/fwd.hpp>
+#include <glm/ext/vector_float3.hpp>
 
 #include "utils/utils.hpp"
 

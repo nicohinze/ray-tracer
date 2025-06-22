@@ -1,8 +1,13 @@
 #pragma once
 
-#include <glm/fwd.hpp>
+#include <optional>
+#include <utility>
+
+#include <glm/ext/vector_float3.hpp>
 
 #include "collisions/aabb.hpp"
+#include "collisions/intersection.hpp"
+#include "collisions/ray.hpp"
 #include "geometry/geometry_object.hpp"
 #include "materials/material.hpp"
 

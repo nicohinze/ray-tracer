@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <glm/fwd.hpp>
+#include <glm/ext/vector_float3.hpp>
 
 #include "materials/texture.hpp"
 

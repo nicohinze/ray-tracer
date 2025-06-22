@@ -1,11 +1,14 @@
 #pragma once
 
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "aabb.hpp"
 #include "hittable.hpp"
 #include "intersection.hpp"
+#include "ray.hpp"
 
 namespace raytracer::collisions {
 
