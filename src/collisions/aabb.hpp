@@ -22,5 +22,7 @@ class AABB {
 };
 
 AABB surrounding_box(const AABB& aabb0, const AABB& aabb1);
+AABB operator+(const AABB& aabb, const glm::vec3& offset);
+AABB operator+(const glm::vec3& offset, const AABB& aabb);
 
 } // namespace raytracer::collisions

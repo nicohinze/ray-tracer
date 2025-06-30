@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <limits>
 
+#include <glm/ext/vector_float3.hpp>
+
 #include "aabb.hpp"
 #include "ray.hpp"
 
@@ -71,6 +73,16 @@ void AABB::pad_to_min() {
         min.z -= padding;
         max.z += padding;
     }
+}
+
+AABB operator+(const AABB& aabb, const glm::vec3& offset) {
+    const auto a = glm::vec3(aabb.get_min().x + offset.x, aabb.get_min().y + offset.y, aabb.get_min().z + offset.z);
+    const auto b = glm::vec3(aabb.get_max().x + offset.x, aabb.get_max().y + offset.y, aabb.get_max().z + offset.z);
+    return {a, b};
+}
+
+AABB operator+(const glm::vec3& offset, const AABB& aabb) {
+    return aabb + offset;
 }
 
 } // namespace raytracer::collisions
