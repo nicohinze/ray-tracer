@@ -8,6 +8,8 @@ set(SOURCE_FILES
     collisions/hittable.cpp
     collisions/intersection.cpp
     collisions/ray.cpp
+    collisions/rotation_y.cpp
+    collisions/translation.cpp
     geometry/geometry_object.cpp
     geometry/moving_sphere.cpp
     geometry/quad.cpp

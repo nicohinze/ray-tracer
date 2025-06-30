@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include <glm/ext/vector_float3.hpp>
 #include <glm/geometric.hpp>
@@ -68,6 +70,22 @@ std::pair<float, float> Quad::get_uv(const glm::vec3& p) const {
     const auto alpha = glm::dot(w, glm::cross(planar_vec, v));
     const auto beta = glm::dot(w, glm::cross(u, planar_vec));
     return std::make_pair(alpha, beta);
+}
+
+std::vector<std::shared_ptr<Quad>> create_box(const glm::vec3& a, const glm::vec3& b, const materials::Material* m) {
+    const auto min = (glm::vec3(std::fmin(a.x, b.x), std::fmin(a.y, b.y), std::fmin(a.z, b.z)));
+    const auto max = (glm::vec3(std::fmax(a.x, b.x), std::fmax(a.y, b.y), std::fmax(a.z, b.z)));
+    const auto dx = glm::vec3(max.x - min.x, 0, 0);
+    const auto dy = glm::vec3(0, max.y - min.y, 0);
+    const auto dz = glm::vec3(0, 0, max.z - min.z);
+    std::vector<std::shared_ptr<Quad>> sides;
+    sides.emplace_back(std::make_shared<Quad>(glm::vec3(min.x, min.y, max.z), dx, dy, m));  // Front
+    sides.emplace_back(std::make_shared<Quad>(glm::vec3(max.x, min.y, min.z), -dx, dy, m)); // Back
+    sides.emplace_back(std::make_shared<Quad>(glm::vec3(min.x, max.y, max.z), dx, -dz, m)); // Top
+    sides.emplace_back(std::make_shared<Quad>(glm::vec3(max.x, min.y, min.z), -dx, dz, m)); // Bottom
+    sides.emplace_back(std::make_shared<Quad>(glm::vec3(min.x, min.y, min.z), dz, dy, m));  // Left
+    sides.emplace_back(std::make_shared<Quad>(glm::vec3(max.x, min.y, max.z), -dz, dy, m)); // Right
+    return sides;
 }
 
 } // namespace raytracer::geometry
