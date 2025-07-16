@@ -5,6 +5,7 @@ set(SOURCE_FILES
     camera/camera.cpp
     collisions/aabb.cpp
     collisions/bvh_node.cpp
+    collisions/constant_medium.cpp
     collisions/hittable.cpp
     collisions/intersection.cpp
     collisions/ray.cpp
@@ -20,6 +21,7 @@ set(SOURCE_FILES
     materials/dielectric.cpp
     materials/diffuse_light.cpp
     materials/image_texture.cpp
+    materials/isotropic.cpp
     materials/lambertian.cpp
     materials/material.cpp
     materials/metal.cpp

@@ -8,7 +8,7 @@ int main() {
     const auto enable_output = true;
     const auto width = 1920;
     const auto height = 1080;
-    const auto recursion_depth = 10;
+    const auto recursion_depth = 100;
     const auto rays_per_pixel = 100;
     auto raytracer = raytracer::Raytracer(width, height, recursion_depth, rays_per_pixel, enable_output);
     auto start = std::chrono::steady_clock::now();
