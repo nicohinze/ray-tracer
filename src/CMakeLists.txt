@@ -10,6 +10,7 @@ set(SOURCE_FILES
     collisions/ray.cpp
     collisions/rotation_y.cpp
     collisions/translation.cpp
+    geometry/cuboid.cpp
     geometry/geometry_object.cpp
     geometry/moving_sphere.cpp
     geometry/quad.cpp

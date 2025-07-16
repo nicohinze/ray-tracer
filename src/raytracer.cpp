@@ -21,6 +21,7 @@
 #include "collisions/ray.hpp"
 #include "collisions/rotation_y.hpp"
 #include "collisions/translation.hpp"
+#include "geometry/cuboid.hpp"
 #include "geometry/moving_sphere.hpp"
 #include "geometry/quad.hpp"
 #include "geometry/sphere.hpp"
@@ -432,21 +433,14 @@ void Raytracer::create_cornell_box_scene(std::size_t width, std::size_t height) 
     geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(0, 0, 0), glm::vec3(555, 0, 0), glm::vec3(0, 0, 555), materials["white"].get()));
     geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(555, 555, 555), glm::vec3(-555, 0, 0), glm::vec3(0, 0, -555), materials["white"].get()));
     geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(0, 0, 555), glm::vec3(555, 0, 0), glm::vec3(0, 555, 0), materials["white"].get()));
-    const auto box1 = geometry::create_box(glm::vec3(0, 0, 0), glm::vec3(165, 330, 165), materials["white"].get());
-    const auto box2 = geometry::create_box(glm::vec3(0, 0, 0), glm::vec3(165, 165, 165), materials["white"].get());
-    auto box3 = std::vector<std::shared_ptr<collisions::Hittable>>();
-    for (const auto& face : box1) {
-        const auto rot = std::make_shared<collisions::RotationY>(face, 15);
-        box3.push_back(std::make_shared<collisions::Translation>(rot, glm::vec3(265, 0, 295)));
-    }
-    auto box4 = std::vector<std::shared_ptr<collisions::Hittable>>();
-    for (const auto& face : box2) {
-        const auto rot = std::make_shared<collisions::RotationY>(face, -18);
-        box4.push_back(std::make_shared<collisions::Translation>(rot, glm::vec3(130, 0, 65)));
-    }
-    geometry_objects.reserve(geometry_objects.size() + box3.size() + box4.size());
-    geometry_objects.insert(geometry_objects.end(), box3.begin(), box3.end());
-    geometry_objects.insert(geometry_objects.end(), box4.begin(), box4.end());
+    std::shared_ptr<collisions::Hittable> box1 = std::make_shared<geometry::Cuboid>(glm::vec3(0, 0, 0), glm::vec3(165, 330, 165), materials["white"].get());
+    std::shared_ptr<collisions::Hittable> box2 = std::make_shared<geometry::Cuboid>(glm::vec3(0, 0, 0), glm::vec3(165, 165, 165), materials["white"].get());
+    box1 = std::make_shared<collisions::RotationY>(box1, 15);
+    box1 = std::make_shared<collisions::Translation>(box1, glm::vec3(265, 0, 295));
+    box2 = std::make_shared<collisions::RotationY>(box2, -18);
+    box2 = std::make_shared<collisions::Translation>(box2, glm::vec3(130, 0, 65));
+    geometry_objects.push_back(box1);
+    geometry_objects.push_back(box2);
     bvh_root = std::make_unique<collisions::BVHNode>(geometry_objects, 0.0, 1.0);
 }
 
