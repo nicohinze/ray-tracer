@@ -52,6 +52,7 @@ class Raytracer {
     void create_quad_scene(std::size_t width, std::size_t height);
     void create_light_scene(std::size_t width, std::size_t height);
     void create_cornell_box_scene(std::size_t width, std::size_t height);
+    void create_cornell_smoke_scene(std::size_t width, std::size_t height);
 
   public:
     Raytracer(std::size_t width, std::size_t height, std::size_t recursion_depth, std::size_t ray_per_pixel, bool show_progress);
