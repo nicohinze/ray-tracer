@@ -32,7 +32,7 @@ jobs:
     - name: Build with clang-tidy
       run: cmake --build build
     - name: Run clang-tidy
-      run: find src tests -name '*.cpp' -o -name '*.hpp' | xargs -P $(nproc) -n 1 clang-tidy-19 -p build -header-filter='^(src|tests)/.*'
+      run: find src tests \( -name '*.cpp' -o -name '*.hpp' \) | xargs -P $(nproc) -n 1 clang-tidy-19 -p build -header-filter='^(src|tests)/.*'
 
   coverage-report:
     name: Coverage report
