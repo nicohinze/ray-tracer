@@ -41,6 +41,9 @@ std::optional<Intersection> ConstantMedium::intersect_impl(const Ray& ray) const
         std::swap(t1, t2);
     }
     t1 = std::max(t1, 0.0f);
+    if (t1 < 1e-3f) {
+        return std::nullopt;
+    }
     const auto ray_length = glm::length(ray.get_direction());
     const auto distance_inside_boundary = (t2 - t1) * ray_length;
     const auto hit_distance = neg_inv_density * std::log(std::max(utils::random_float(), 1e-6f));
