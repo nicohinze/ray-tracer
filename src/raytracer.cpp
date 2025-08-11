@@ -53,7 +53,8 @@ Raytracer::Raytracer(std::size_t width, std::size_t height, std::size_t recursio
     // create_quad_scene(width, height);
     // create_light_scene(width, height);
     // create_cornell_box_scene(width, height);
-    create_cornell_smoke_scene(width, height);
+    // create_cornell_smoke_scene(width, height);
+    create_final_scene(width, height);
 }
 
 void Raytracer::trace_rays() {
@@ -485,6 +486,78 @@ void Raytracer::create_cornell_smoke_scene(std::size_t width, std::size_t height
     box2 = std::make_shared<collisions::Translation>(box2, glm::vec3(130, 0, 65));
     geometry_objects.push_back(std::make_shared<collisions::ConstantMedium>(box1, 0.001f, glm::vec3(1, 1, 1)));
     geometry_objects.push_back(std::make_shared<collisions::ConstantMedium>(box2, 0.001f, glm::vec3(0, 0, 0)));
+    bvh_root = std::make_unique<collisions::BVHNode>(geometry_objects, 0.0, 1.0);
+}
+
+void Raytracer::create_final_scene(std::size_t width, std::size_t height) {
+    const auto origin = glm::vec3(478, 278, -600);
+    const auto lookat = glm::vec3(278, 278, 0);
+    const auto vup = glm::vec3(0, 1, 0);
+    const auto bg = glm::vec3(0, 0, 0);
+    const auto vfov = 40.0f;
+    const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+    const auto aperture = 0.01f;
+    const auto focus_dist = 10.0f;
+    camera = camera::Camera(
+        origin,
+        lookat,
+        vup,
+        bg,
+        vfov,
+        aspect_ratio,
+        aperture,
+        focus_dist,
+        0.0,
+        1.0
+    );
+
+    if (const auto data_dir = utils::data_directory_path()) {
+        auto earth_texture = std::make_unique<materials::ImageTexture>((data_dir.value() / std::filesystem::path("earthmap.jpg")).string());
+        materials["earth"] = std::make_unique<materials::Lambertian>(std::move(earth_texture));
+    }
+    auto noise_texture = std::make_unique<materials::NoiseTexture>(0.2);
+    materials["ground"] = std::make_unique<materials::Lambertian>(glm::vec3(0.48, 0.83, 0.53));
+    materials["light"] = std::make_unique<materials::DiffuseLight>(glm::vec3(7, 7, 7));
+    materials["noise"] = std::make_unique<materials::Lambertian>(std::move(noise_texture));
+    materials["sphere"] = std::make_unique<materials::Lambertian>(glm::vec3(0.7, 0.3, 0.1));
+    materials["white"] = std::make_unique<materials::Lambertian>(glm::vec3(0.73, 0.73, 0.73));
+    materials["dielectric"] = std::make_unique<materials::Dielectric>(1.5);
+    materials["metal"] = std::make_unique<materials::Metal>(glm::vec3(0.8, 0.8, 0.9), 1.0);
+    auto geometry_objects = std::vector<std::shared_ptr<collisions::Hittable>>();
+    geometry_objects.push_back(std::make_shared<geometry::Quad>(glm::vec3(123, 554, 147), glm::vec3(300, 0, 0), glm::vec3(0, 0, 265), materials["light"].get()));
+    const auto boxes_per_side = 20;
+    for (auto i = 0; i < boxes_per_side; ++i) {
+        for (auto j = 0; j < boxes_per_side; ++j) {
+            const auto w = 100.0;
+            const auto x0 = -1000.0 + i * w;
+            const auto z0 = -1000.0 + j * w;
+            const auto y0 = 0.0;
+            const auto x1 = x0 + w;
+            const auto y1 = utils::random_float(1, 101);
+            const auto z1 = z0 + w;
+            geometry_objects.push_back(std::make_shared<geometry::Cuboid>(glm::vec3(x0, y0, z0), glm::vec3(x1, y1, z1), materials["ground"].get()));
+        }
+    }
+    geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(400, 200, 400), 100, materials["earth"].get()));
+    geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(260, 150, 45), 50, materials["dielectric"].get()));
+    const auto centre1 = glm::vec3(400, 400, 200);
+    const auto centre2 = centre1 + glm::vec3(30, 0, 0);
+    geometry_objects.push_back(std::make_shared<geometry::MovingSphere>(centre1, centre2, 50, 0.0, 1.0, materials["sphere"].get()));
+    geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(0, 150, 145), 50, materials["metal"].get()));
+    const auto small_boundary = std::make_shared<geometry::Sphere>(glm::vec3(360, 150, 145), 70, materials["dielectric"].get());
+    geometry_objects.push_back(small_boundary);
+    geometry_objects.push_back(std::make_shared<collisions::ConstantMedium>(small_boundary, 0.2f, glm::vec3(0.2, 0.4, 0.9)));
+    const auto big_boundary = std::make_shared<geometry::Sphere>(glm::vec3(0, 0, 0), 5000, materials["dielectric"].get());
+    geometry_objects.push_back(std::make_shared<collisions::ConstantMedium>(big_boundary, 0.0001f, glm::vec3(1, 1, 1)));
+    geometry_objects.push_back(std::make_shared<geometry::Sphere>(glm::vec3(220, 280, 300), 80, materials["noise"].get()));
+    const auto ns = 1000;
+    auto small_spheres = std::vector<std::shared_ptr<collisions::Hittable>>();
+    for (auto _ = 0; _ < ns; ++_) {
+        small_spheres.push_back(std::make_shared<geometry::Sphere>(glm::vec3(utils::random_float(0, 165), utils::random_float(0, 165), utils::random_float(0, 165)), 10, materials["white"].get()));
+    }
+    for (const auto& s : small_spheres) {
+        geometry_objects.push_back(std::make_shared<collisions::Translation>(s, glm::vec3(-100, 270, 395)));
+    }
     bvh_root = std::make_unique<collisions::BVHNode>(geometry_objects, 0.0, 1.0);
 }
 
